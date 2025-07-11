@@ -12,6 +12,9 @@ yarn-error.log*
 # Generated documentation (optional - you might want to include this)
 docs/generated/
 
+# Cloned repositories for analysis
+my_project_repo/
+
 # Logs
 logs
 *.log

@@ -45,6 +45,12 @@ function loadConfig(configPath) {
             }
         });
 
+        // Validate Git configuration if present
+        if (config.git_repo) {
+            const gitUtils = require('./gitUtils');
+            gitUtils.validateGitConfig(config.git_repo);
+        }
+
         // Replace template variables in paths
         const processedConfig = replaceTemplateVariables(config);
 

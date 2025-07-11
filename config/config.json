@@ -1,21 +1,25 @@
 {
-  "project_root_folder": ".",
+  "project_root_folder": "./my_project_repo",
   "llm_api_key_env_var": "GEMINI_API_KEY",
+  "git_repo": {
+    "url": "https://github.com/ideologas/Carrot.git",
+    "branch": "main"
+  },
   "steps": [
     {
-      "name": "TechnicalOverview",
+      "name": "BusinessOverview",
       "depends_on": [],
       "parallel": false,
       "model": "gemini-1.5-pro",
       "temperature": 0.3,
-      "initial_instruction_file": "instructions/initial_instruction.txt",
-      "post_instruction_file": "instructions/post_instruction.txt",
+      "initial_instruction_file": "instructions/business-overwiver/initial_instruction.txt",
+      "post_instruction_file": "instructions/business-overwiver/post_instruction.txt",
       "input_folders": [
-        "data",
-        "data/existing-docs"
+        "my_project_repo",
+        "docs"
       ],
-      "file_filters": ["*.ts", "*.js", "*.html"],
-      "output_folder": "docs/generated"
+      "file_filters": ["*.ts", "*.js", "*.html", "*.md", "*.json", "*.py", "*.java", "*.cpp", "*.c", "*.h", "*.cs", "*.php", "*.rb", "*.go", "*.rs", "*.swift", "*.kt"],
+      "output_folder": "docs"
     }
   ]
 } 
