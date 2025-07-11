@@ -71,18 +71,20 @@ async function executeStep(step) {
         let allChunks = [];
         for (const folder of step.input_folders) {
             if (fs.existsSync(folder)) {
-                // Check for chunk_*.txt files
-                const files = fs.readdirSync(folder).filter(f => f.startsWith('chunk_') && f.endsWith('.txt'));
+                // Check for code_part_*.txt or chunk_*.txt files
+                let files = fs.readdirSync(folder).filter(f => (f.startsWith('code_part_') || f.startsWith('chunk_')) && f.endsWith('.txt'));
                 if (files.length > 0) {
-                    // Read all chunk files in order
                     files.sort();
+                    console.log(`📦 Found ${files.length} prepared chunk files in folder: ${folder}`);
+                    files.forEach((file, idx) => console.log(`  [${idx + 1}] ${file}`));
                     for (const file of files) {
                         const content = fs.readFileSync(path.join(folder, file), 'utf8');
                         allChunks.push(content);
                     }
-                    console.log(`📦 Loaded ${files.length} chunks from folder: ${folder}`);
+                    console.log(`📦 Loaded ${files.length} prepared chunks from folder: ${folder}`);
                 } else {
                     // No chunk files, treat as docs folder: concatenate and chunk
+                    console.log(`📁 No prepared chunk files found in ${folder}. Concatenating and chunking raw files...`);
                     const concatenatedContent = fileUtils.readAndConcatenateFiles([folder], step.file_filters);
                     if (concatenatedContent && concatenatedContent.trim().length > 0) {
                         const chunks = fileUtils.chunkString(concatenatedContent, 9000);
@@ -105,6 +107,11 @@ async function executeStep(step) {
             ...allChunks,
             postInstruction
         ];
+        console.log(`📝 Total messages to LLM: ${messages.length}`);
+        messages.forEach((msg, idx) => {
+            const preview = msg.length > 200 ? msg.substring(0, 200) + '...' : msg;
+            console.log(`--- Message [${idx + 1}] (${msg.length} chars) ---\n${preview}\n----------------------`);
+        });
         // 4. Call LLM
         console.log('🤖 Calling Gemini API...');
         const llmResponse = await llmClient.callGeminiWithRetry(
@@ -154,7 +161,6 @@ function parseLLMResponse(llmResponse) {
     try {
         // Clean the response - remove any markdown formatting or extra text
         let cleanResponse = llmResponse.trim();
-        
         // Look for JSON content (it might be wrapped in markdown code blocks)
         const jsonMatch = cleanResponse.match(/```json\s*([\s\S]*?)\s*```/);
         if (jsonMatch) {
@@ -166,38 +172,52 @@ function parseLLMResponse(llmResponse) {
                 cleanResponse = arrayMatch[0];
             }
         }
-        
-        // Parse JSON
-        const operations = JSON.parse(cleanResponse);
-        
+        // Try to parse JSON, but if it fails, try to recover partial JSON
+        let operations;
+        try {
+            operations = JSON.parse(cleanResponse);
+        } catch (e) {
+            // Try to recover by trimming to the last closing brace
+            const lastBrace = cleanResponse.lastIndexOf('}');
+            const lastBracket = cleanResponse.lastIndexOf(']');
+            if (lastBracket > lastBrace && lastBracket !== -1) {
+                cleanResponse = cleanResponse.substring(0, lastBracket + 1);
+            } else if (lastBrace !== -1) {
+                cleanResponse = cleanResponse.substring(0, lastBrace + 1) + ']';
+            }
+            try {
+                operations = JSON.parse(cleanResponse);
+                console.warn('⚠️  LLM response was truncated. Partial JSON was recovered.');
+            } catch (e2) {
+                console.error('❌ Failed to parse LLM response:', e2.message);
+                console.error('Raw LLM response:', llmResponse.substring(0, 1000) + '...');
+                throw new Error(`Failed to parse LLM response: ${e2.message}`);
+            }
+        }
         // Validate operations
         if (!Array.isArray(operations)) {
             throw new Error('LLM response must be an array of operations');
         }
-        
-        // Validate each operation
         for (let i = 0; i < operations.length; i++) {
             const op = operations[i];
-            
             if (!op.operation || !['create', 'update', 'delete'].includes(op.operation)) {
                 throw new Error(`Invalid operation at index ${i}: ${op.operation}`);
             }
-            
             if (!op.file_path) {
                 throw new Error(`Missing file_path at index ${i}`);
             }
-            
             if ((op.operation === 'create' || op.operation === 'update') && !op.file_content) {
                 throw new Error(`Missing file_content for ${op.operation} operation at index ${i}`);
             }
         }
-        
+        if (llmResponse.length > 0 && llmResponse[llmResponse.length - 1] !== ']') {
+            console.warn('⚠️  LLM response appears truncated.');
+        }
         console.log(`✅ Parsed ${operations.length} file operations from LLM response`);
         return operations;
-        
     } catch (error) {
         console.error('❌ Failed to parse LLM response:', error.message);
-        console.error('Raw LLM response:', llmResponse.substring(0, 500) + '...');
+        console.error('Raw LLM response:', llmResponse.substring(0, 1000) + '...');
         throw new Error(`Failed to parse LLM response: ${error.message}`);
     }
 }

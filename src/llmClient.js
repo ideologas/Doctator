@@ -19,27 +19,22 @@ async function callGemini(model, temperature, messages) {
         console.log(`📝 Sending ${messages.length} messages to LLM`);
 
         // Initialize the Gemini client
-        const genAI = new GoogleGenAI({ apiKey });
-        
-        // Get the model
-        const geminiModel = genAI.models.getModel(model);
-        
-        // Prepare the conversation content
-        // For Gemini, we need to structure this as a single prompt with all messages
-        const fullPrompt = messages.join('\n\n');
-        
-        // Make the API call
-        const response = await geminiModel.generateContent({
-            contents: fullPrompt,
-            config: {
-                temperature: temperature,
-                maxOutputTokens: 8192,
-            }
+        const ai = new GoogleGenAI({ apiKey });
+
+        // Prepare the conversation content as required by the new SDK
+        // Each message is a string; Gemini expects an array of objects with 'text' property
+        const contents = messages.map(msg => ({ text: msg }));
+
+        // Make the API call using the new SDK pattern
+        const response = await ai.models.generateContent({
+            model,
+            contents,
+            temperature,
+            maxOutputTokens: 65536, // Increased output token limit
         });
 
         // Extract the response text
         const responseText = response.text;
-        
         if (!responseText) {
             throw new Error('Empty response from Gemini API');
         }

@@ -144,6 +144,64 @@ async function cloneAndCheckoutFirstCommit({ repoUrl, branch, destinationPath })
 }
 
 /**
+ * Clones a repository and checks out the latest commit on the specified branch
+ * @param {Object} params - Parameters object
+ * @param {string} params.repoUrl - Git repository URL
+ * @param {string} params.branch - Branch to clone from
+ * @param {string} params.destinationPath - Where to clone the repository
+ */
+async function cloneRepoAtBranch({ repoUrl, branch, destinationPath }) {
+    const originalCwd = process.cwd();
+    try {
+        console.log('🚀 Starting Git Integration: Latest Commit (HEAD)');
+        console.log(`📁 Repository: ${repoUrl}`);
+        console.log(`🌿 Branch: ${branch}`);
+        console.log(`📂 Destination: ${destinationPath}`);
+
+        // Clean up destination if it exists
+        if (fs.existsSync(destinationPath)) {
+            const contents = fs.readdirSync(destinationPath);
+            if (contents.length > 0) {
+                console.log('⚠️  Destination path exists and is not empty. Cleaning for fresh clone...');
+                fs.rmSync(destinationPath, { recursive: true, force: true });
+                console.log('✅ Cleaned existing directory');
+            }
+        }
+        fs.mkdirSync(destinationPath, { recursive: true });
+
+        // Clone the repository at the specified branch (default HEAD)
+        console.log('📥 Cloning repository...');
+        await executeCommand(
+            `git clone --branch ${branch} "${repoUrl}" "${destinationPath}"`,
+            { cwd: path.dirname(destinationPath) }
+        );
+        process.chdir(destinationPath);
+        console.log(`📂 Changed to directory: ${destinationPath}`);
+        // Log latest commit info
+        const latestCommit = (await executeCommand('git log --oneline -1')).trim();
+        console.log(`📝 Latest commit info: ${latestCommit}`);
+        console.log('✅ Git Integration completed successfully!');
+        console.log(`📁 Repository is now at the latest commit in: ${destinationPath}`);
+    } catch (error) {
+        console.error('❌ Git Integration (latest commit) failed:', error.message);
+        if (fs.existsSync(destinationPath)) {
+            console.log('🧹 Cleaning up failed clone...');
+            try {
+                fs.rmSync(destinationPath, { recursive: true, force: true });
+            } catch (cleanupError) {
+                console.warn('⚠️  Could not clean up destination directory:', cleanupError.message);
+            }
+        }
+        throw error;
+    } finally {
+        if (process.cwd() !== originalCwd) {
+            process.chdir(originalCwd);
+            console.log(`📂 Restored working directory: ${originalCwd}`);
+        }
+    }
+}
+
+/**
  * Validates Git configuration
  * @param {Object} gitConfig - Git configuration object
  * @returns {boolean} True if configuration is valid
@@ -173,5 +231,6 @@ function validateGitConfig(gitConfig) {
 module.exports = {
     executeCommand,
     cloneAndCheckoutFirstCommit,
-    validateGitConfig
+    validateGitConfig,
+    cloneRepoAtBranch
 }; 

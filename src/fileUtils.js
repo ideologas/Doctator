@@ -56,8 +56,9 @@ function getAllFiles(folders, fileFilters = []) {
         const files = getAllFilesRecursive(folder);
         
         // Apply file filters if provided
+        let filteredFiles;
         if (fileFilters.length > 0) {
-            const filteredFiles = files.filter(file => {
+            filteredFiles = files.filter(file => {
                 const ext = path.extname(file);
                 return fileFilters.some(filter => {
                     // Convert glob pattern to regex (simple implementation)
@@ -65,10 +66,12 @@ function getAllFiles(folders, fileFilters = []) {
                     return new RegExp(pattern + '$').test(ext) || new RegExp(pattern + '$').test(path.basename(file));
                 });
             });
-            allFiles.push(...filteredFiles);
         } else {
-            allFiles.push(...files);
+            filteredFiles = files;
         }
+        // Exclude package-lock.json by filename
+        filteredFiles = filteredFiles.filter(file => path.basename(file) !== 'package-lock.json');
+        allFiles.push(...filteredFiles);
     }
     
     return allFiles;
@@ -89,7 +92,9 @@ function getAllFilesRecursive(dir) {
             const fullPath = path.join(dir, item);
             const stat = fs.statSync(fullPath);
             
+            // Exclude playwright-report folders
             if (stat.isDirectory()) {
+                if (item === 'playwright-report') continue;
                 files.push(...getAllFilesRecursive(fullPath));
             } else if (stat.isFile()) {
                 files.push(fullPath);

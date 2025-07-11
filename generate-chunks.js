@@ -7,7 +7,7 @@ async function main() {
   const repoUrl = 'https://github.com/ideologas/Carrot.git';
   const branch = 'main';
   const destinationPath = 'my_project_repo';
-  const chunkOutputFolder = 'chunks/TechnicalOverview';
+  const chunkOutputFolder = 'chunks';
   const fileFilters = [
     '*.ts', '*.js', '*.html', '*.md', '*.json', '*.py', '*.java', '*.cpp', '*.c', '*.h', '*.cs', '*.php', '*.rb', '*.go', '*.rs', '*.swift', '*.kt'
   ];
@@ -15,7 +15,8 @@ async function main() {
 
   try {
     console.log('🚀 [Stage 1] Cloning repo and generating chunks...');
-    await gitUtils.cloneAndCheckoutFirstCommit({ repoUrl, branch, destinationPath });
+    // Only clone the repo, do not check out the first commit
+    await gitUtils.cloneRepoAtBranch({ repoUrl, branch, destinationPath });
     await chunkGenerator.generateChunks({
       inputFolders: [destinationPath],
       fileFilters,

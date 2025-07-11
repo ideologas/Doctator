@@ -5,12 +5,23 @@
       "name": "BusinessOverview",
       "depends_on": [],
       "parallel": false,
-      "model": "gemini-1.5-pro",
+      "model": "gemini-2.5-pro",
       "temperature": 0.3,
-      "initial_instruction_file": "instructions/business-overwiver/initial_instruction.txt",
-      "post_instruction_file": "instructions/business-overwiver/post_instruction.txt",
+      "initial_instruction_file": "instructions/business-overviewer/initial_instruction.txt",
+      "post_instruction_file": "instructions/business-overviewer/post_instruction.txt",
       "input_folders": ["chunks", "docs/overview"],
       "output_folder": "docs/overview"
+    },
+    {
+      "name": "TechicalOverview",
+      "depends_on": [],
+      "parallel": false,
+      "model": "gemini-2.5-pro",
+      "temperature": 0.3,
+      "initial_instruction_file": "instructions/technical-overviewer/initial_instruction.txt",
+      "post_instruction_file": "instructions/technical-overviewer/post_instruction.txt",
+      "input_folders": ["chunks", "docs/technology"],
+      "output_folder": "docs/technology"
     }
   ]
 } 

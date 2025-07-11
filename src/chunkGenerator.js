@@ -36,7 +36,11 @@ async function generateChunks({ inputFolders, fileFilters, outputFolder, chunkSi
 
         // 2. Read and concatenate files
         console.log('📖 Reading and concatenating files...');
-        const concatenatedContent = fileUtils.readAndConcatenateFiles(inputFolders, fileFilters);
+        // Exclude package-lock.json from fileFilters
+        const effectiveFileFilters = fileFilters.filter(f => f !== 'package-lock.json');
+        const concatenatedContentRaw = fileUtils.readAndConcatenateFiles(inputFolders, effectiveFileFilters);
+        // Replace my_project_repo/ with project_for_documentation/ in content
+        const concatenatedContent = concatenatedContentRaw.replace(/my_project_repo\//g, 'project_for_documentation/');
         
         if (!concatenatedContent || concatenatedContent.trim().length === 0) {
             throw new Error('No content found in input folders');
@@ -56,7 +60,7 @@ async function generateChunks({ inputFolders, fileFilters, outputFolder, chunkSi
         
         for (let i = 0; i < chunks.length; i++) {
             const chunkNumber = i + 1;
-            const chunkFileName = `chunk_${chunkNumber.toString().padStart(3, '0')}.txt`;
+            const chunkFileName = `code_part_${chunkNumber.toString().padStart(3, '0')}.txt`;
             const chunkFilePath = path.join(outputFolder, chunkFileName);
             
             // Save chunk content
@@ -73,42 +77,71 @@ async function generateChunks({ inputFolders, fileFilters, outputFolder, chunkSi
             console.log(`✅ Saved chunk ${chunkNumber}: ${chunkFileName} (${chunks[i].length} chars)`);
         }
 
-        // 5. Create metadata file
-        const metadata = {
-            generatedAt: new Date().toISOString(),
-            totalChunks: chunks.length,
-            totalCharacters: concatenatedContent.length,
-            chunkSize: chunkSize,
-            inputFolders: inputFolders,
-            fileFilters: fileFilters,
-            chunks: chunkFiles
-        };
+        // Generate code_folder_structure.txt
+        function getFolderStructure(rootDir, prefix = '') {
+            let structure = '';
+            const items = fs.readdirSync(rootDir, { withFileTypes: true });
+            const folders = items.filter(item => item.isDirectory());
+            const files = items.filter(item => item.isFile() && item.name !== 'package-lock.json');
+            for (const folder of folders) {
+                structure += `${prefix}${folder.name}/\n`;
+                structure += getFolderStructure(path.join(rootDir, folder.name), prefix + '  ');
+            }
+            for (const file of files) {
+                structure += `${prefix}${file.name}\n`;
+            }
+            return structure;
+        }
+        let folderStructure = '';
+        for (const inputFolder of inputFolders) {
+            if (fs.existsSync(inputFolder)) {
+                // Replace my_project_repo/ with project_for_documentation/ in folder structure
+                const baseName = path.basename(inputFolder) === 'my_project_repo' ? 'project_for_documentation' : path.basename(inputFolder);
+                folderStructure += `${baseName}/\n`;
+                let structure = getFolderStructure(inputFolder, '  ');
+                structure = structure.replace(/my_project_repo\//g, 'project_for_documentation/');
+                folderStructure += structure;
+            }
+        }
+        const structureFilePath = path.join(outputFolder, 'code_folder_structure.txt');
+        fs.writeFileSync(structureFilePath, folderStructure, 'utf8');
+        console.log(`📁 Saved folder structure: ${structureFilePath}`);
 
-        const metadataPath = path.join(outputFolder, 'chunks_metadata.json');
-        fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2), 'utf8');
-        
-        console.log(`📋 Saved metadata: ${metadataPath}`);
+        // 5. Create metadata file
+        // const metadata = {
+        //     generatedAt: new Date().toISOString(),
+        //     totalChunks: chunks.length,
+        //     totalCharacters: concatenatedContent.length,
+        //     chunkSize: chunkSize,
+        //     inputFolders: inputFolders,
+        //     fileFilters: fileFilters,
+        //     chunks: chunkFiles
+        // };
+
+        // const metadataPath = path.join(outputFolder, 'chunks_metadata.json');
+        // fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2), 'utf8');
+        // console.log(`📋 Saved metadata: ${metadataPath}`);
 
         // 6. Create summary file
-        const summaryPath = path.join(outputFolder, 'chunks_summary.txt');
-        const summary = [
-            `Chunk Generation Summary`,
-            `======================`,
-            `Generated at: ${metadata.generatedAt}`,
-            `Total chunks: ${metadata.totalChunks}`,
-            `Total characters: ${metadata.totalCharacters.toLocaleString()}`,
-            `Chunk size: ${chunkSize.toLocaleString()} characters`,
-            `Input folders: ${inputFolders.join(', ')}`,
-            `File filters: ${fileFilters.join(', ')}`,
-            ``,
-            `Chunk Files:`,
-            ...chunkFiles.map(chunk => 
-                `  ${chunk.fileName} - ${chunk.characterCount.toLocaleString()} characters`
-            )
-        ].join('\n');
+        // const summaryPath = path.join(outputFolder, 'chunks_summary.txt');
+        // const summary = [
+        //     `Chunk Generation Summary`,
+        //     `======================`,
+        //     `Generated at: ${metadata.generatedAt}`,
+        //     `Total chunks: ${metadata.totalChunks}`,
+        //     `Total characters: ${metadata.totalCharacters.toLocaleString()}`,
+        //     `Chunk size: ${chunkSize.toLocaleString()} characters`,
+        //     `Input folders: ${inputFolders.join(', ')}`,
+        //     `File filters: ${fileFilters.join(', ')}`,
+        //     ``,
+        //     `Chunk Files:`,
+        //     ...chunkFiles.map(chunk => 
+        //         `  ${chunk.fileName} - ${chunk.characterCount.toLocaleString()} characters`
+        //     )
+        // ].join('\n');
 
-        fs.writeFileSync(summaryPath, summary, 'utf8');
-        console.log(`📝 Saved summary: ${summaryPath}`);
+        // fs.writeFileSync(summaryPath, summary, 'utf8');
+        // console.log(`📝 Saved summary: ${summaryPath}`);
 
         console.log('🎉 Chunk generation completed successfully!');
         console.log(`📊 Generated ${chunks.length} chunks in: ${outputFolder}`);
@@ -119,8 +152,8 @@ async function generateChunks({ inputFolders, fileFilters, outputFolder, chunkSi
             totalChunks: chunks.length,
             totalCharacters: concatenatedContent.length,
             chunkFiles: chunkFiles,
-            metadataPath: metadataPath,
-            summaryPath: summaryPath
+            // metadataPath: metadataPath,
+            // summaryPath: summaryPath
         };
 
     } catch (error) {

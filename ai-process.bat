@@ -1,22 +1,13 @@
 @echo off
-
 :: ========================================
-echo    AI-DocGen Engine Relauncher
+echo    AI-DocGen AI Processing
 :: ========================================
 echo.
 
-echo 🧹 Cleaning up previous runs...
+echo 🧹 Cleaning up previous generated docs...
 if exist "docs\generated" (
     echo Removing previous generated docs...
     rmdir /s /q "docs\generated"
-)
-if exist "my_project_repo" (
-    echo Removing previous Git repository...
-    rmdir /s /q "my_project_repo"
-)
-if exist "chunks" (
-    echo Removing previous chunks...
-    rmdir /s /q "chunks"
 )
 echo.
 echo 🔍 Checking environment...
@@ -29,24 +20,16 @@ if not exist ".env" (
     exit /b 1
 )
 echo.
-echo 🚀 [Stage 1] Generating chunks from repo...
-node generate-chunks.js
-if errorlevel 1 (
-    echo ❌ Stage 1 (chunk generation) failed. Aborting.
-    pause
-    exit /b 1
-)
-echo.
 echo 🚀 [Stage 2] Running AI-DocGen Engine...
 node index.js
 if errorlevel 1 (
-    echo ❌ Stage 2 (AI engine) failed.
+    echo ❌ AI processing failed.
     pause
     exit /b 1
 )
 echo.
 echo ========================================
-echo Engine execution completed!
+echo AI processing completed!
 echo Check the docs\generated folder for output.
 echo ========================================
 echo.

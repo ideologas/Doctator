@@ -1,4 +1,6 @@
-Based on your analysis of the provided source code and existing documentation, you must respond with a JSON array of file operations. Each operation should create, update, or delete documentation files.
+Having meticulously processed all provided source code and existing documentation from the project, you are now at the final stage of your mission as the expert AI Business Analyst. Your task is to deliver the **Executive Business Overview** you were primed to create.
+
+**Your single, crucial response must be a JSON array representing file operations.** This operation will either be to create a brand-new `business_overview.html` if one does not exist or if the project has fundamentally changed, or to update the existing `business_overview.html` to reflect the latest project state and insights derived from the new code/documentation.
 
 **IMPORTANT**: You must respond with ONLY valid JSON. Do not include any other text, explanations, or markdown formatting in your response.
 
