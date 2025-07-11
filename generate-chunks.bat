@@ -5,10 +5,10 @@ echo    AI-DocGen Chunk Generation
 echo.
 
 echo 🧹 Cleaning up previous repo and chunks...
-if exist "my_project_repo" (
-    echo Removing previous Git repository...
-    rmdir /s /q "my_project_repo"
-)
+:: if exist "my_project_repo" (
+::     echo Removing previous Git repository...
+::     rmdir /s /q "my_project_repo"
+:: )
 if exist "chunks" (
     echo Removing previous chunks...
     rmdir /s /q "chunks"

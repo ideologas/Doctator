@@ -1,27 +1,58 @@
 {
-  "llm_api_key_env_var": "GEMINI_API_KEY",
-  "steps": [
-    {
-      "name": "BusinessOverview",
-      "depends_on": [],
-      "parallel": false,
-      "model": "gemini-2.5-pro",
-      "temperature": 0.3,
-      "initial_instruction_file": "instructions/business-overviewer/initial_instruction.txt",
-      "post_instruction_file": "instructions/business-overviewer/post_instruction.txt",
-      "input_folders": ["chunks", "docs/overview"],
-      "output_folder": "docs/overview"
-    },
-    {
-      "name": "TechicalOverview",
-      "depends_on": [],
-      "parallel": false,
-      "model": "gemini-2.5-pro",
-      "temperature": 0.3,
-      "initial_instruction_file": "instructions/technical-overviewer/initial_instruction.txt",
-      "post_instruction_file": "instructions/technical-overviewer/post_instruction.txt",
-      "input_folders": ["chunks", "docs/technology"],
-      "output_folder": "docs/technology"
-    }
-  ]
+    "llm_api_key_env_var": "GEMINI_API_KEY",
+    "execution_groups": [
+        [
+            {
+                "name": "BusinessOverview",
+                "model": "gemini-2.5-flash",
+                "temperature": 0.3,
+                "initial_instruction_file": "instructions/business-overviewer/initial_instruction.txt",
+                "post_instruction_file": "instructions/business-overviewer/post_instruction.txt",
+                "input_folders": ["chunks", "docs/overview"],
+                "output_folder": "docs/overview"
+            },
+            {
+                "name": "TechnicalOverview",
+                "model": "gemini-2.5-flash",
+                "temperature": 0.1,
+                "initial_instruction_file": "instructions/technical-overviewer/initial_instruction.txt",
+                "post_instruction_file": "instructions/technical-overviewer/post_instruction.txt",
+                "input_folders": ["chunks", "docs/technology"],
+                "output_folder": "docs/technology"
+            },
+            {
+                "name": "EntityExpert",
+                "model": "gemini-2.5-pro",
+                "temperature": 0.1,
+                "initial_instruction_file": "instructions/entity-expert/initial_instruction.txt",
+                "post_instruction_file": "instructions/entity-expert/post_instruction.txt",
+                "input_folders": ["chunks", "docs/entities"],
+                "output_folder": "docs/entities"
+            },
+            {
+                "name": "TermsConceptsExpert",
+                "model": "gemini-2.5-pro",
+                "temperature": 0.1,
+                "initial_instruction_file": "instructions/terms-concepts-expert/initial_instruction.txt",
+                "post_instruction_file": "instructions/terms-concepts-expert/post_instruction.txt",
+                "input_folders": ["chunks", "docs/terms-and-concepts"],
+                "output_folder": "docs/terms-and-concepts"
+            }
+        ],
+        [
+            {
+                "name": "BackendExpert",
+                "model": "gemini-2.5-pro",
+                "temperature": 0.1,
+                "initial_instruction_file": "instructions/backend-expert/initial_instruction.txt",
+                "post_instruction_file": "instructions/backend-expert/post_instruction.txt",
+                "input_folders": [
+                    "chunks",
+                    "docs/entities",
+                    "docs/terms-and-concepts"
+                ],
+                "output_folder": "docs/backend"
+            }
+        ]
+    ]
 } 

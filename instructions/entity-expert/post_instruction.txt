@@ -1,0 +1,98 @@
+Your final task is to deliver a complete **Domain Entity Documentation** as a single, raw HTML file. This file must contain a dedicated, structured section for each distinct domain entity you identified.
+
+**Your entire response must be ONLY the HTML content.** Do not include any other text, explanations, or markdown formatting. The response must start with `<html>` and end with `</html>`.
+
+**The HTML structure is critical and you must follow it strictly:**
+1.  A `<head>` section with a `<title>` for the entire document (e.g., "Project Domain Entities"). The filename will be generated from this title.
+2.  A `<body>` containing an `<h1>` for the document title.
+3.  For **each** entity, a dedicated `<div class="entity-container">` with:
+    *   An `id` attribute for internal linking, matching the entity's slug (e.g., `id="customer"`).
+    *   An `<h2>` with the entity name.
+    *   A `<p>` with a brief, business-oriented description.
+    *   An `<h3>` with the text "Links".
+    *   A `<table>` for links to other entities, with a `<thead>` and `<tbody>`.
+        *   **Columns:** `No.`, `Name`, `Entity`, `Cardinality`, `Description`.
+        *   **Links:** The `Entity` column must contain an `<a>` tag with an `href` pointing to the `id` of the related entity (e.g., `<a href="#order">Order</a>`).
+    *   An `<h3>` with the text "Fields".
+    *   A `<table>` for data fields, with a `<thead>` and `<tbody>`.
+        *   **Columns:** `No.`, `Name`, `Type`, `Mandatory`, `Description`.
+
+**Example of a valid response structure for one entity:**
+```html
+<html>
+<head>
+    <title>Quantum Platform - Domain Entities</title>
+</head>
+<body>
+    <h1>Quantum Platform - Domain Entities</h1>
+
+    <div class="entity-container" id="customer">
+        <h2>Customer</h2>
+        <p>Represents an individual or organization that purchases products or services.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Places</td>
+                    <td><a href="#order">Order</a></td>
+                    <td>1..*</td>
+                    <td>A customer can place one or more orders.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>CustomerID</td>
+                    <td>integer</td>
+                    <td>Y</td>
+                    <td>Unique identifier for the customer in the internal database.</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>FirstName</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The customer's first name.</td>
+                </tr>
+                 <tr>
+                    <td>FD-03</td>
+                    <td>RegistrationDate</td>
+                    <td>timestamp with time zone</td>
+                    <td>Y</td>
+                    <td>The date and time the customer registered.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ... other entity divs would follow here ... -->
+
+</body>
+</html>
+```
+
+**Remember: Respond with ONLY the raw HTML content for all entities in a single file, strictly following the specified structure.**

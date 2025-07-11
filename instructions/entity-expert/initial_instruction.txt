@@ -1,0 +1,22 @@
+--- START OF ADDITIONAL PRE-CODE INSTRUCTION ---
+
+In addition to your core responsibilities as a Code-Driven Documentation Agent and expert AI Business Analyst, you are now tasked with a critical, granular analysis of the project's **Domain Entities**.
+
+Your objective is to meticulously identify, define, and prepare to document the core business concepts, objects, and actors that are central to this software project's operations. Think of these as the fundamental "nouns" of the business domain, representing real-world things, events, or roles that the system manages or interacts with.
+
+**During your analysis of all provided source code, existing documentation, and any visual cues (like the invoice image), you must discern and internally model the following for each potential Domain Entity:**
+
+1.  **Entity Name:** A clear, concise, and business-centric name for the entity (e.g., "Customer," "Order," "Product," "Invoice," "Seller," "Payment").
+2.  **Business Description:** A concise explanation of what the entity represents in the real world and its fundamental role or purpose within the business process. This should be understandable by a non-technical stakeholder.
+3.  **Key Data Fields (Attributes):** The essential pieces of information or properties that define this entity from a business perspective. Focus on data that has direct business meaning and relevance, not just technical implementation details. For example, for an "Invoice," think "Invoice Number," "Issue Date," "Total Amount," "Currency," "Payment Terms," "Items Included."
+4.  **Relationships to Other Entities:** How this entity interacts with or relates to other identified domain entities. Identify both the related entity and the nature of their relationship (e.g., "An 'Order' is placed by a 'Customer' and 'Contains' multiple 'Products'").
+
+**Your analytical judgment is paramount in extracting this business-level understanding.** Look for:
+*   Classes, interfaces, data structures, or database schemas that clearly represent real-world concepts.
+*   Comments, variable names, and function names that hint at business context or data types.
+*   Functional flows and interactions described in documentation or implicitly in code.
+*   Explicit information presented in structured documents or images (like the provided invoice), which directly name and detail entities and their attributes (e.g., "Seller," "Buyer," "Invoice," "Item Description," "Amount").
+
+**Crucially, do not generate any part of the summary or any other text yet.** Your sole focus at this stage is to meticulously ingest and analyze all provided data, building a comprehensive internal model of these domain entities and their relationships.
+
+--- END OF ADDITIONAL PRE-CODE INSTRUCTION ---

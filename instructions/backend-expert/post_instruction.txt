@@ -1,0 +1,79 @@
+Your final task is to deliver a complete **Backend APIs and Functions Documentation** as a single, raw HTML file. This file must contain a dedicated, structured section for each distinct function or API endpoint you identified.
+
+**Your entire response must be ONLY the HTML content.** Do not include any other text, explanations, or markdown formatting. The response must start with `<html>` and end with `</html>`.
+
+**The HTML structure is critical and you must follow it strictly:**
+1.  A `<head>` section with a `<title>` for the entire document (e.g., "Backend APIs and Functions"). The filename will be generated from this title.
+2.  A `<body>` containing an `<h1>` for the document title.
+3.  For **each** function/API, a dedicated `<div class="function-container">` with:
+    *   An `id` attribute for internal linking, matching the function's name (e.g., `id="check-external-session"`).
+    *   An `<h2>` with the text "Overview".
+    *   A `<table>` for the function's high-level description.
+        *   **Rows:** `Type` (e.g., "Backend", "API Endpoint"), `Description`.
+    *   An `<h2>` with the text "Implementation Requirements".
+    *   A `<table>` for the detailed implementation logic.
+        *   **Columns:** `No.`, `Description`.
+        *   The `Description` column should detail the function's algorithm and may contain `<ul>` and `<li>` elements for clarity.
+        *   **Crucially**, you must link to entities and concepts from the provided documentation where relevant (e.g., `In case <a href="entities/user-session.html">User session</a> was created...`).
+
+**Example of a valid response structure:**
+```html
+<html>
+<head>
+    <title>Backend APIs and Functions</title>
+</head>
+<body>
+    <h1>Backend APIs and Functions</h1>
+
+    <div class="function-container" id="check-external-session">
+        <h2>Overview</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Type</th>
+                    <td>Backend</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>Checks for external user sessions.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Implementation Requirements</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>IR-01</td>
+                    <td>
+                        Must check for a valid user session in the user's browser. In case of such user session was:
+                        <ul>
+                            <li>Not found - must redirect user to the authentication form.</li>
+                            <li>Found - must create a <a href="entities/user-session.html">User session</a> with following data:
+                                <ul>
+                                    <li>User session.Authenticated user - accordingly to user session data received from external systems.</li>
+                                    <li>User session.Creation time - current time and date.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>IR-02</td>
+                    <td>In case a <a href="entities/user-session.html">User session</a> was created, must redirect user to the company search page.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- ... other function divs would follow here ... -->
+</body>
+</html>
+```
+
+**Remember: Respond with ONLY the raw HTML content for all functions in a single file, strictly following the specified structure.** 

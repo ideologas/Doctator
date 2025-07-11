@@ -1,0 +1,41 @@
+Your final task is to deliver a complete **Terms & Concepts Glossary** as a single, raw HTML file. This file must contain a dedicated, structured section for each distinct concept you identified.
+
+**Your entire response must be ONLY the HTML content.** Do not include any other text, explanations, or markdown formatting. The response must start with `<html>` and end with `</html>`.
+
+**The HTML structure is critical and you must follow it strictly:**
+1.  A `<head>` section with a `<title>` for the entire document (e.g., "Project Terms & Concepts"). The filename will be generated from this title.
+2.  A `<body>` containing an `<h1>` for the document title.
+3.  For **each** concept, a dedicated `<div class="concept-container">` with:
+    *   An `id` attribute for internal linking, matching the concept's slug (e.g., `id="idempotent-operations"`).
+    *   An `<h2>` with the concept name.
+    *   A `<p>` with a brief, clear definition.
+    *   (Optional) An `<h3>` with the text "Related Concepts" and a `<ul>` with `<a>` tags linking to other concepts in the document (e.g., `<a href="#service-locator">Service Locator</a>`).
+
+**Example of a valid response structure:**
+```html
+<html>
+<head>
+    <title>Quantum Platform - Terms & Concepts</title>
+</head>
+<body>
+    <h1>Quantum Platform - Terms & Concepts</h1>
+
+    <div class="concept-container" id="idempotent-operations">
+        <h2>Idempotent Operations</h2>
+        <p>An operation that can be applied multiple times without changing the result beyond the initial application. This is critical for safe API retries.</p>
+    </div>
+
+    <div class="concept-container" id="service-locator">
+        <h2>Service Locator</h2>
+        <p>A design pattern used to encapsulate the processes involved in obtaining a service with a strong abstraction layer.</p>
+        <h3>Related Concepts</h3>
+        <ul>
+            <li><a href="#idempotent-operations">Idempotent Operations</a></li>
+        </ul>
+    </div>
+
+</body>
+</html>
+```
+
+**Remember: Respond with ONLY the raw HTML content for all concepts in a single file, strictly following the specified structure.** 

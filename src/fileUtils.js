@@ -181,7 +181,16 @@ function applyFileOperations(operations, outputFolder) {
     let created = 0, updated = 0, deleted = 0;
     
     for (const operation of operations) {
-        const fullPath = path.join(outputFolder, operation.file_path);
+        // If the path from the AI has no file extension, assume it's a directory and skip it.
+        if (!path.extname(operation.file_path)) {
+            console.warn(`⚠️  Skipping operation on a path without a file extension (assumed directory): ${operation.file_path}`);
+            continue;
+        }
+
+        // Final fix: Always use the basename of the file path from the AI
+        // to prevent any kind of directory nesting issues.
+        const fileName = path.basename(operation.file_path);
+        const fullPath = path.join(outputFolder, fileName);
         
         try {
             switch (operation.operation) {
