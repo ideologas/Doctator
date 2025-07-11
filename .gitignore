@@ -15,6 +15,9 @@ docs/generated/
 # Cloned repositories for analysis
 my_project_repo/
 
+# Generated chunks
+chunks/
+
 # Logs
 logs
 *.log

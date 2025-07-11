@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node index.js",
     "test": "node index.js config/config.json",
-    "dev": "node index.js"
+    "dev": "node index.js",
+    "stage1": "node generate-chunks.js",
+    "stage2": "node index.js config/config-stage2.json",
+    "generate-chunks": "node generate-chunks.js config/config-stage1.json"
   },
   "keywords": [
     "ai",

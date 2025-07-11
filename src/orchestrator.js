@@ -3,6 +3,7 @@ const path = require('path');
 const configLoader = require('./configLoader');
 const fileUtils = require('./fileUtils');
 const llmClient = require('./llmClient');
+const chunkGenerator = require('./chunkGenerator');
 
 /**
  * Main orchestrator function that runs the AI-DocGen process
@@ -66,48 +67,58 @@ async function executeStep(step) {
         const initialInstruction = loadInstructionFile(step.initial_instruction_file);
         const postInstruction = loadInstructionFile(step.post_instruction_file);
         
-        // 2. Read and concatenate input files
-        console.log('📁 Reading input files...');
-        const concatenatedContent = fileUtils.readAndConcatenateFiles(
-            step.input_folders,
-            step.file_filters
-        );
-        
-        if (!concatenatedContent || concatenatedContent.trim().length === 0) {
+        // 2. Gather all chunks from input_folders
+        let allChunks = [];
+        for (const folder of step.input_folders) {
+            if (fs.existsSync(folder)) {
+                // Check for chunk_*.txt files
+                const files = fs.readdirSync(folder).filter(f => f.startsWith('chunk_') && f.endsWith('.txt'));
+                if (files.length > 0) {
+                    // Read all chunk files in order
+                    files.sort();
+                    for (const file of files) {
+                        const content = fs.readFileSync(path.join(folder, file), 'utf8');
+                        allChunks.push(content);
+                    }
+                    console.log(`📦 Loaded ${files.length} chunks from folder: ${folder}`);
+                } else {
+                    // No chunk files, treat as docs folder: concatenate and chunk
+                    const concatenatedContent = fileUtils.readAndConcatenateFiles([folder], step.file_filters);
+                    if (concatenatedContent && concatenatedContent.trim().length > 0) {
+                        const chunks = fileUtils.chunkString(concatenatedContent, 9000);
+                        allChunks.push(...chunks);
+                        console.log(`📦 Chunked and loaded ${chunks.length} chunks from docs folder: ${folder}`);
+                    }
+                }
+            } else {
+                console.warn(`⚠️  Input folder does not exist: ${folder}`);
+            }
+        }
+        if (allChunks.length === 0) {
             console.warn('⚠️  No content found in input folders. Skipping step.');
             return;
         }
-        
-        // 3. Chunk the content
-        console.log('📦 Chunking content...');
-        const chunks = fileUtils.chunkString(concatenatedContent, 9000);
-        
-        // 4. Prepare messages for LLM
+        // 3. Prepare messages for LLM
         console.log('💬 Preparing messages for LLM...');
         const messages = [
             initialInstruction,
-            ...chunks,
+            ...allChunks,
             postInstruction
         ];
-        
-        // 5. Call LLM
+        // 4. Call LLM
         console.log('🤖 Calling Gemini API...');
         const llmResponse = await llmClient.callGeminiWithRetry(
             step.model,
             step.temperature,
             messages
         );
-        
-        // 6. Parse LLM response
+        // 5. Parse LLM response
         console.log('🔍 Parsing LLM response...');
         const operations = parseLLMResponse(llmResponse);
-        
-        // 7. Apply file operations
+        // 6. Apply file operations
         console.log('💾 Applying file operations...');
         fileUtils.applyFileOperations(operations, step.output_folder);
-        
         console.log(`✅ Step "${step.name || 'Unnamed Step'}" completed successfully`);
-        
     } catch (error) {
         console.error(`❌ Step "${step.name || 'Unnamed Step'}" failed:`, error.message);
         throw error;
