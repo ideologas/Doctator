@@ -1,0 +1,28 @@
+{
+  "name": "ai-docgen",
+  "version": "1.0.0",
+  "description": "AI-Powered Auto-Documentation Engine using Google Gemini",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node index.js config/config.json",
+    "dev": "node index.js"
+  },
+  "keywords": [
+    "ai",
+    "documentation",
+    "gemini",
+    "automation",
+    "code-analysis"
+  ],
+  "author": "AI-DocGen Team",
+  "license": "MIT",
+  "dependencies": {
+    "@google/genai": "^1.9.0",
+    "axios": "^1.6.2",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

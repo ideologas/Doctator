@@ -1,0 +1,186 @@
+---
+alwaysApply: false
+---
+
+AI-Powered Auto-Documentation Engine
+Project Title: AI-DocGen (AI-Powered Documentation Generator)
+Objective: Develop a robust orchestration engine that automates documentation generation based on codebase changes. It will pick up the current state of files from a Git project, feed them along with existing documentation into specialist LLMs (Gemini), and then create/update documentation files based on the LLMs' JSON responses.
+Technology Stack:
+Orchestration Engine: Node.js (recommended for its async nature and ecosystem, easily integrates with REST APIs).
+AI Provider: Google Gemini API.
+File I/O: Standard Node.js fs module.
+Configuration: JSON files.
+LLM Instructions: Simple text files.
+1. Core Architectural Concept
+The engine will operate in a series of configurable steps. Each step represents an interaction with a "specialist" LLM (Gemini).
+Git Integration (Conceptual): Assume the main application handles checking out the latest commit from the Git project's main branch into a designated codebase_root_folder.
+Input Preparation: For each LLM call, the system will read all specified files from input_folders (which include both source code and existing documentation). These files will be concatenated into a single large string, with clear separators to maintain file boundaries.
+Chunking: This large concatenated string will then be split into smaller chunks, ensuring no file is split in the middle, to fit within Gemini's per-message token limits.
+LLM Interaction (Multi-Message Chat):
+A single "conversation thread" will be maintained for each LLM call.
+The initial_instruction_file content will be sent as the first message.
+Each code/documentation chunk will be sent as a subsequent message.
+The post_instruction_file content will be sent as the final message, prompting the LLM for its structured JSON response.
+Output Processing: The LLM's JSON response (defining file create, delete, update operations) will be parsed. The engine will then perform these file system operations in the designated output_folder.
+Orchestration: A central JSON configuration file will define the sequence and parallelism of these LLM calls, ensuring dependencies are met before proceeding.
+2. Detailed Requirements for the AI Coder
+2.1. Project Setup & Core Utilities:
+A. Project Initialization: Set up a new Node.js project.
+B. Dependencies: Install necessary packages (e.g., dotenv for env vars, a good HTTP client like axios, google-generative-ai SDK if available/preferred, or direct fetch calls to Gemini API).
+C. Configuration Loader: Implement a module to read and parse the main orchestration JSON configuration file.
+D. File I/O Utility: A module to:
+Recursively read all file contents from specified input_folders, applying optional file_filters.
+Concatenate file contents into a single string with clear file separators (e.g., \n--- FILE_START: <filepath> ---\n<file_content>\n--- FILE_END: <filepath> ---\n).
+Split the concatenated string into chunks based on a maximum character/token length (ensure file boundaries are respected – do not split a file in the middle).
+Perform file create, delete, update operations based on the LLM's structured output. (update should internally be delete followed by create).
+E. LLM API Client: A module to interact with the Google Gemini API.
+It must support multi-message chat conversations.
+Handle API key authentication (from environment variables).
+Implement retries with exponential backoff for rate limits or transient errors.
+2.2. Orchestration Engine Logic:
+A. Main Execution Loop: The core engine loop will iterate through the steps defined in the configuration.
+B. Dependency Management: For each step, check its depends_on array. The step should only execute once all its dependencies have completed.
+C. Parallel Execution: If a step has parallel: true and all its dependencies are met, it should be launched concurrently (using Promise.all or similar in Node.js) with other eligible parallel steps. The engine waits for all parallel steps to finish before moving to the next sequence.
+D. Step Execution: For each LLM call step:
+Read Instructions: Load content from initial_instruction_file and post_instruction_file.
+Prepare Input: Use the File I/O Utility to read, concatenate, and chunk files from all specified input_folders (applying file_filters).
+Construct Chat Messages:
+First message: initial_instruction_file content.
+Subsequent messages: Each prepared code/documentation chunk.
+Final message: post_instruction_file content.
+Call LLM: Send the constructed multi-message conversation to the Gemini API.
+Parse Response: Expect a JSON string in the LLM's response. Parse it.
+LLM JSON Output Schema: The LLM's response must be an array of objects, each with:
+Generated json
+{
+  "operation": "create" | "delete" | "update",
+  "file_path": "path/to/relative/file.html", // Relative to the step's output_folder
+  "file_content": "<html>...</html>" // Only for "create" or "update" operations
+}
+Use code with caution.
+Json
+(Note: file_name changed to file_path for clarity of relative path).
+Perform File Operations: Based on the parsed JSON, use the File I/O Utility to create, delete, or update files in the step's output_folder.
+2.3. Configuration File (config.json) Schema:
+Generated json
+{
+  "project_root_folder": "./my_git_repo", // Root for all relative paths
+  "llm_api_key_env_var": "GEMINI_API_KEY", // Environment variable name for LLM API key
+  "steps": [
+    {
+      "depends_on": [], // Array of step names this step depends on. Empty means no dependencies.
+      "parallel": false, // True if this step can run in parallel with other steps with the same dependencies
+      "model": "gemini-1.5-pro",
+      "temperature": 0.3,
+      "initial_instruction_file": "instructions/business_overview_prompt.txt",
+      "post_instruction_file": "instructions/json_response_format.txt",
+      "input_folders": [
+        "{{project_root_folder}}/src",
+        "{{project_root_folder}}/docs/existing_overview"
+      ],
+      "file_filters": ["*.ts", "*.js", "*.md", "*.txt"], // Optional: only include these file extensions from input folders
+      "output_folder": "{{project_root_folder}}/docs/business_overview" // Where this step's output goes
+    },
+    {
+      "depends_on": ["BusinessOverview"], // Depends on the previous step
+      "parallel": true, // Can run in parallel with other parallel steps that also depend on BusinessOverview
+      "model": "gemini-1.5-pro",
+      "temperature": 0.2,
+      "initial_instruction_file": "instructions/technical_details_prompt.txt",
+      "post_instruction_file": "instructions/json_response_format.txt",
+      "input_folders": [
+        "{{project_root_folder}}/src",
+        "{{project_root_folder}}/docs/technical_docs"
+      ],
+      "file_filters": ["*.ts", "*.js", "*.py"],
+      "output_folder": "{{project_root_folder}}/docs/technical_docs"
+    },
+    {
+      "depends_on": ["BusinessOverview"],
+      "parallel": true,
+      "model": "gemini-1.5-pro",
+      "temperature": 0.2,
+      "initial_instruction_file": "instructions/data_model_prompt.txt",
+      "post_instruction_file": "instructions/json_response_format.txt",
+      "input_folders": [
+        "{{project_root_folder}}/src/models",
+        "{{project_root_folder}}/src/db",
+        "{{project_root_folder}}/docs/data_entities"
+      ],
+      "file_filters": ["*.ts", "*.js", "*.sql"],
+      "output_folder": "{{project_root_folder}}/docs/data_entities"
+    },
+    {
+      "depends_on": ["TechnicalDetails", "DataModel"], // This step waits for both of its dependencies to finish
+      "parallel": false,
+      "model": "gemini-1.5-pro",
+      "temperature": 0.1, // Lower temperature for review/consistency
+      "initial_instruction_file": "instructions/reviewer_prompt.txt",
+      "post_instruction_file": "instructions/json_response_format.txt",
+      "input_folders": [
+        "{{project_root_folder}}/src", // Provide code context
+        "{{project_root_folder}}/docs/business_overview",
+        "{{project_root_folder}}/docs/technical_docs",
+        "{{project_root_folder}}/docs/data_entities"
+      ],
+      "file_filters": ["*.ts", "*.js", "*.py", "*.html"], // Read all relevant files
+      "output_folder": "{{project_root_folder}}/docs/review_notes" // Example: generate review summary here
+    }
+  ]
+}
+Use code with caution.
+Json
+2.4. LLM Instructions (Example instructions/json_response_format.txt):
+Generated text
+You must respond with a JSON array of operations. Each object in the array must have an "operation" field (either "create", "delete", or "update"), a "file_path" field (string, relative to the output folder), and if the operation is "create" or "update", a "file_content" field (string, containing HTML content).
+
+Example JSON structure:
+[
+  {
+    "operation": "create",
+    "file_path": "new_feature_summary.html",
+    "file_content": "<html><body><h1>New Feature</h1><p>...</p></body></html>"
+  },
+  {
+    "operation": "update",
+    "file_path": "existing_module_description.html",
+    "file_content": "<html><body><h1>Updated Module</h1><p>...</p></body></html>"
+  },
+  {
+    "operation": "delete",
+    "file_path": "old_deprecated_component.html"
+  }
+]
+Do not include any other text or markdown in your response, only the JSON.
+Use code with caution.
+Text
+2.5. Execution Flow Example:
+node index.js config.json
+Engine reads config.json.
+Engine launches BusinessOverview LLM call.
+Reads src and existing_overview folders.
+Concatenates files, chunks them.
+Sends to Gemini with business_overview_prompt.txt then chunks then json_response_format.txt.
+Receives JSON, creates/updates files in docs/business_overview.
+Engine sees TechnicalDetails and DataModel dependencies are met. Launches them in parallel.
+Each runs its own LLM call, processes its own input_folders and output_folder.
+Engine waits for TechnicalDetails and DataModel to complete.
+Engine launches OverallReviewAndConsistency LLM call.
+Reads src (code context) AND the newly generated files in docs/business_overview, docs/technical_docs, docs/data_entities.
+Sends to Gemini.
+Receives JSON, creates/updates files in docs/review_notes.
+All steps complete.
+3. Success Criteria:
+The engine can successfully parse the config.json and execute steps in the defined sequence and parallelism.
+Each LLM call successfully authenticates with Gemini and completes a multi-message conversation.
+Files are correctly read from input_folders, concatenated, and chunked without splitting files.
+LLM responses are correctly parsed according to the specified JSON schema.
+File create, delete, and update operations are performed accurately in the designated output_folders.
+Generated HTML files open correctly and contain content as expected by the LLM's output.
+4. Deliverables:
+Complete Node.js application: All source code files.
+package.json: With all necessary dependencies.
+Example config.json: As defined above, demonstrating multiple steps, parallelism, and folder structures.
+Example instructions/*.txt files: For various prompts (initial, post-instruction for JSON format, specialist prompts).
+README.md: Clear instructions on how to set up (including .env for API key), run, and test the engine. It should also explain the config.json parameters.
+This framework provides your AI coder with a clear, actionable plan. It focuses on the core orchestration and LLM interaction, leveraging Gemini's capabilities directly, and sets the stage for future iterations regarding human feedback and advanced deployment.

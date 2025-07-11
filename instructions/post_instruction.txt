@@ -1,0 +1,35 @@
+Based on your analysis of the provided source code and existing documentation, you must respond with a JSON array of file operations. Each operation should create, update, or delete documentation files.
+
+**IMPORTANT**: You must respond with ONLY valid JSON. Do not include any other text, explanations, or markdown formatting in your response.
+
+The JSON structure must be an array of objects, where each object has:
+- "operation": either "create", "update", or "delete"
+- "file_path": the relative path for the file (e.g., "overview.html", "api/string-processor.html")
+- "file_content": the complete HTML content for the file (required for "create" and "update" operations)
+
+Example JSON structure:
+[
+  {
+    "operation": "create",
+    "file_path": "project_overview.html",
+    "file_content": "<html><head><title>Project Overview</title></head><body><h1>Project Overview</h1><p>This project contains...</p></body></html>"
+  },
+  {
+    "operation": "update",
+    "file_path": "api_documentation.html",
+    "file_content": "<html><head><title>API Documentation</title></head><body><h1>API Documentation</h1><p>Updated content...</p></body></html>"
+  },
+  {
+    "operation": "delete",
+    "file_path": "outdated_file.html"
+  }
+]
+
+Requirements for HTML content:
+- Use simple, clean HTML with basic tags: <html>, <head>, <title>, <body>, <h1>, <h2>, <h3>, <p>, <ul>, <li>, <code>, <pre>
+- Include proper page titles
+- Structure content with clear headings
+- Provide practical code examples where appropriate
+- Make the documentation comprehensive and useful for developers
+
+Remember: Respond with ONLY the JSON array, no other text. 

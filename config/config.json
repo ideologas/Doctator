@@ -1,0 +1,21 @@
+{
+  "project_root_folder": ".",
+  "llm_api_key_env_var": "GEMINI_API_KEY",
+  "steps": [
+    {
+      "name": "TechnicalOverview",
+      "depends_on": [],
+      "parallel": false,
+      "model": "gemini-1.5-pro",
+      "temperature": 0.3,
+      "initial_instruction_file": "instructions/initial_instruction.txt",
+      "post_instruction_file": "instructions/post_instruction.txt",
+      "input_folders": [
+        "data",
+        "data/existing-docs"
+      ],
+      "file_filters": ["*.ts", "*.js", "*.html"],
+      "output_folder": "docs/generated"
+    }
+  ]
+} 
