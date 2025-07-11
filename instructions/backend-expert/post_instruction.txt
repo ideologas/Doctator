@@ -7,10 +7,10 @@ Your final task is to deliver a complete **Backend APIs and Functions Documentat
 2.  A `<body>` containing an `<h1>` for the document title.
 3.  For **each** function/API, a dedicated `<div class="function-container">` with:
     *   An `id` attribute for internal linking, matching the function's name (e.g., `id="check-external-session"`).
-    *   An `<h2>` with the text "Overview".
+    *   An `<h2>` containing the unique and descriptive name of the function or endpoint (e.g., "Check for External User Session"). This is a change from the previous "Overview" heading.
     *   A `<table>` for the function's high-level description.
         *   **Rows:** `Type` (e.g., "Backend", "API Endpoint"), `Description`.
-    *   An `<h2>` with the text "Implementation Requirements".
+    *   An `<h3>` with the text "Implementation Requirements".
     *   A `<table>` for the detailed implementation logic.
         *   **Columns:** `No.`, `Description`.
         *   The `Description` column should detail the function's algorithm and may contain `<ul>` and `<li>` elements for clarity.
@@ -26,7 +26,7 @@ Your final task is to deliver a complete **Backend APIs and Functions Documentat
     <h1>Backend APIs and Functions</h1>
 
     <div class="function-container" id="check-external-session">
-        <h2>Overview</h2>
+        <h2>Check for External User Session</h2>
         <table>
             <tbody>
                 <tr>
@@ -40,7 +40,7 @@ Your final task is to deliver a complete **Backend APIs and Functions Documentat
             </tbody>
         </table>
 
-        <h2>Implementation Requirements</h2>
+        <h3>Implementation Requirements</h3>
         <table>
             <thead>
                 <tr>

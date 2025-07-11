@@ -1,0 +1,223 @@
+<html>
+<head>
+    <title>Technical Overview of the digiSure Platform</title>
+</head>
+<body>
+    <h1>Technical Overview: digiSure Platform</h1>
+
+    <h2>1. High-Level System Architecture</h2>
+    <p>The digiSure platform employs a <strong>Microservices Architecture</strong>, where distinct backend services handle specific functionalities. Frontend applications (web and mobile) interact with these services, often via an API gateway or direct communication, to provide a unified user experience. A headless Content Management System (CMS) serves as the central content repository.</p>
+
+    <h3>Conceptual Architecture Flow:</h3>
+    <pre>
++---------------------+          +---------------------+
+|   Mobile App        |          |     Web App         |
+|   (React Native)    |          |     (Next.js)       |
++----------+----------+          +----------+----------+
+           |                              |
+           |                              | (API Proxy)
+           |                              v
+           |                      +---------------+
+           |                      |  API Gateway  |
+           |                      | (Next.js API) |
+           |                      +-------+-------+
+           |                              |
+           | RESTful API calls            | RESTful API calls
+           v                              v
++----------+----------+          +----------+----------+          +-----------------+          +-----------------+
+| Authentication      |<---------| Access Key          |<-------->|   Redis Cache   |
+| Service             | (updates)| Service             |          | (Access Keys,   |
+| (.NET Core)         |          | (.NET Core)         |          | Content Cache,  |
++----------+----------+          +----------+----------+          | Anonymous Users)|
+           |                              ^                        +-----------------+
+           | (AuthN data)                 | (access key lookups)
+           v                              |
++----------+----------+          +----------+----------+          +-----------------+
+|   MySQL Database    |          | Content             |<-------->|    Strapi CMS   |
+| (User Accounts,     |          | Service             |          | (Content, Media)|
+| Journey State)      |          | (.NET Core)         |          +----------+----------+
++---------------------+          +----------+----------+                     |
+                                            | (Webhook for                   v
+                                            |  Cache Invalidation)   +-----------------+
+                                            +----------------------->| Azure Blob      |
+                                                                     | Storage         |
+                                                                     | (Media Assets)  |
+                                                                     +-----------------+
+</pre>
+
+    <h2>2. Key Technical Components & Their Roles</h2>
+    <ul>
+        <li><strong>Frontend (Web - Next.js)</strong>:
+            <ul>
+                <li><strong>Role</strong>: Provides the primary web-based user interface, handling routing, data fetching (via an internal API proxy), and client-side interactivity.</li>
+            </ul>
+        </li>
+        <li><strong>Frontend (Mobile - React Native)</strong>:
+            <ul>
+                <li><strong>Role</strong>: Offers a native mobile application experience for iOS and Android, directly consuming backend APIs.</li>
+            </ul>
+        </li>
+        <li><strong>Authentication Service (`Quantum.AuthenticationService`)</strong>:
+            <ul>
+                <li><strong>Role</strong>: Manages user identity, including registration, login (for both anonymous and registered users), JWT token issuance (access and refresh tokens), and user profile management. It integrates with the Access Key Service to update user-specific data upon authentication state changes.</li>
+            </ul>
+        </li>
+        <li><strong>Access Key Service (`Quantum.AccessKeyService`)</strong>:
+            <ul>
+                <li><strong>Role</strong>: A dedicated microservice for storing and managing transient, user-specific key-value pairs and "wording flags." These dynamic attributes are used for content personalization and controlling user journeys. Data is cached in Redis for high performance.</li>
+            </ul>
+        </li>
+        <li><strong>Content Service (`Quantum.ContentService`)</strong>:
+            <ul>
+                <li><strong>Role</strong>: Responsible for retrieving and serving UI content from the Strapi CMS. It applies dynamic access control and personalization rules by consulting the Access Key Service, and aggressively caches content in Redis to optimize delivery.</li>
+            </ul>
+        </li>
+        <li><strong>Journey Service (`Quantum.JourneyService`)</strong>:
+            <ul>
+                <li><strong>Role</strong>: Manages multi-step user flows (journeys), such as application forms or questionnaires. It persists the state of user progress and collected data, and provides integrity checks to ensure users proceed through steps correctly.</li>
+            </ul>
+        </li>
+        <li><strong>Strapi CMS (`quantum-strapi`)</strong>:
+            <ul>
+                <li><strong>Role</strong>: A headless CMS that serves as the single source of truth for all UI content (pages, components, media, forms, navigation). It provides an administrative interface for content creators and exposes content via a RESTful API.</li>
+            </ul>
+        </li>
+        <li><strong>Shared Common Library (`Quantum.Common`)</strong>:
+            <ul>
+                <li><strong>Role</strong>: A reusable library containing cross-cutting concerns for backend services, including authentication utilities, caching abstractions, generic HTTP client extensions, centralized error handling, and request validation.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>3. Core Technologies & Rationale</h2>
+    <ul>
+        <li><strong>Backend</strong>:
+            <ul>
+                <li><strong>Language/Framework</strong>: C# / .NET Core 8 with ASP.NET Core.
+                <ul><li><strong>Rationale</strong>: Chosen for its performance, scalability, robust ecosystem, and mature tools for building enterprise-grade microservices. Libraries like FluentValidation (for validation) and MediatR (for CQRS pattern) enhance code quality and maintainability.</li></ul>
+                </li>
+            </ul>
+        </li>
+        <li><strong>Frontend (Web)</strong>:
+            <ul>
+                <li><strong>Language/Framework</strong>: TypeScript / Next.js (React).
+                <ul><li><strong>Rationale</strong>: Next.js offers strong capabilities for Server-Side Rendering (SSR) and Static Site Generation (SSG), improving performance, SEO, and developer experience. React provides a component-based approach for building interactive UIs, and TypeScript ensures type safety.</li></ul>
+                </li>
+            </ul>
+        </li>
+        <li><strong>Frontend (Mobile)</strong>:
+            <ul>
+                <li><strong>Language/Framework</strong>: TypeScript / React Native (with Expo).
+                <ul><li><strong>Rationale</strong>: React Native enables efficient cross-platform mobile development from a single codebase. Expo streamlines development, testing, and deployment workflows.</li></ul>
+                </li>
+            </ul>
+        </li>
+        <li><strong>CMS</strong>:
+            <ul>
+                <li><strong>Language/Framework</strong>: JavaScript / Strapi.
+                <ul><li><strong>Rationale</strong>: As an open-source headless CMS, Strapi provides flexibility for content modeling and API exposure, enabling content-first development and decoupling content from presentation.</li></ul>
+                </li>
+            </ul>
+        </li>
+        <li><strong>Databases</strong>:
+            <ul>
+                <li><strong>MySQL</strong>: Used by Authentication Service (for user identity, via ASP.NET Identity), Journey Service (for persistent journey state), and Strapi CMS (for content storage).
+                <ul><li><strong>Rationale</strong>: A robust, open-source relational database suitable for structured data requiring transactional integrity.</li></ul>
+                </li>
+                <li><strong>Redis</strong>: Utilized by Access Key Service (as its primary data store), Content Service (for caching Strapi content), and Authentication Service (for anonymous user sessions).
+                <ul><li><strong>Rationale</strong>: An in-memory data store providing extremely fast read/write operations, ideal for caching, session management, and quick retrieval of frequently accessed dynamic data like access keys.</li></ul>
+                </li>
+            </ul>
+        </li>
+        <li><strong>Cloud Storage</strong>:
+            <ul>
+                <li><strong>Azure Blob Storage</strong>: Integrated with Strapi for storing all media assets (images, videos, documents).
+                <ul><li><strong>Rationale</strong>: Offers scalable, cost-effective, and highly available object storage for large volumes of unstructured data.</li></ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>4. Data Flow & Persistence Overview</h2>
+    <p>Data typically flows through the system as follows:</p>
+    <ul>
+        <li><strong>Content Management Pipeline</strong>:
+            <ol>
+                <li>Content is authored and published in <strong>Strapi CMS</strong>.</li>
+                <li>The <strong>Content Service</strong> retrieves content from Strapi's API.</li>
+                <li>Before serving, the Content Service applies dynamic filtering and personalization rules based on user attributes fetched from the <strong>Access Key Service</strong>.</li>
+                <li>Processed content is cached in <strong>Redis</strong> by the Content Service.</li>
+                <li>Frontend applications fetch content from the Content Service, leveraging the Redis cache for speed.</li>
+                <li>Updates in Strapi trigger a webhook to the Content Service to invalidate relevant Redis cache entries, ensuring content freshness.</li>
+            </ol>
+        </li>
+        <li><strong>Authentication Flow</strong>:
+            <ol>
+                <li>Users interact with frontend applications to register or log in.</li>
+                <li>Login/registration requests are sent to the <strong>Authentication Service</strong>.</li>
+                <li>The Authentication Service authenticates users against stored credentials in a <strong>MySQL</strong> database.</li>
+                <li>Upon successful login, JWTs (access and refresh tokens) are issued. Refresh tokens for registered users are stored in <strong>MySQL</strong>, while anonymous user session data (including refresh tokens) is stored in <strong>Redis</strong> for its transient nature and speed.</li>
+                <li>The Authentication Service notifies the <strong>Access Key Service</strong> about the user's authentication status, role, and country to update personalized flags.</li>
+            </ol>
+        </li>
+        <li><strong>Journey Progress Flow</strong>:
+            <ol>
+                <li>Users initiate or progress through multi-step journeys via frontend applications, sending data to the <strong>Journey Service</strong>.</li>
+                <li>The Journey Service retrieves and persists journey state and collected data in its dedicated <strong>MySQL</strong> database.</li>
+                <li>During journey progression, the Journey Service may query the <strong>Access Key Service</strong> to dynamically influence journey logic or presented content based on user attributes.</li>
+                <li>Integrity checks ensure users are on the correct step, redirecting if necessary.</li>
+            </ol>
+        </li>
+    </ul>
+    <p><strong>Main Data Stores & Primary Roles:</strong></p>
+    <ul>
+        <li><strong>MySQL</strong>: Primary persistence for structured, transactional data:
+            <ul>
+                <li>User accounts and authentication details (Authentication Service).</li>
+                <li>Long-lived journey states and collected data (Journey Service).</li>
+                <li>Core content structure, metadata, and relations (Strapi CMS).</li>
+            </ul>
+        </li>
+        <li><strong>Redis</strong>: High-speed, in-memory caching and transient data storage:
+            <ul>
+                <li>Dynamic user attributes, personalization flags (Access Key Service).</li>
+                <li>Cached UI content from Strapi (Content Service).</li>
+                <li>Anonymous user session data and refresh tokens (Authentication Service).</li>
+            </ul>
+        </li>
+        <li><strong>Azure Blob Storage</strong>: Scalable storage for unstructured binary data:
+            <ul>
+                <li>All media assets (images, videos, documents) uploaded via Strapi.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>5. Deployment & Environment Considerations (High-Level)</h2>
+    <p>The platform is designed for a cloud-native deployment, primarily targeting <strong>Azure</strong> infrastructure, with a strong emphasis on containerization.</p>
+    <ul>
+        <li><strong>Containerized Deployment</strong>: All backend microservices and the Strapi CMS are packaged as Docker containers. This is evident from the presence of Docker configurations (`launchSettings.json` with "Container (Dockerfile)" profiles) and `ecosystem.config.js` for Strapi. This facilitates consistent deployment across environments.</li>
+        <li><strong>Cloud-Native on Azure</strong>:
+            <ul>
+                <li>Environment configurations (e.g., `appsettings.Development.json`) often reference Azure-specific hostnames like `k8s-service-name` (implying Kubernetes) and `*.database.azure.com` for MySQL.</li>
+                <li>Strapi explicitly uses Azure Blob Storage for media, indicating deep integration with Azure services.</li>
+            </ul>
+        </li>
+        <li><strong>Microservices Deployment Model</strong>: Each backend service is independently deployable and scalable. This allows for isolated updates and scaling of individual components based on their specific load profiles.</li>
+        <li><strong>Externalized Configuration</strong>: Configuration is managed via environment variables and `appsettings.{Environment}.json` files for .NET services, enabling easy adaptation to different environments (e.g., Development, Production) without code changes.</li>
+        <li><strong>API Proxy for Web Frontend</strong>: The Next.js web frontend includes an internal API proxy (`/api/proxy/[...path]`). This design decision centralizes API calls, abstracts backend service URLs from the client, and mitigates cross-origin resource sharing (CORS) issues in a server-rendered context.</li>
+        <li><strong>Health Checks</strong>: Backend services expose `/health` endpoints, which are standard for container orchestration platforms (like Kubernetes) to monitor service health and readiness.</li>
+    </ul>
+
+    <h2>6. Key Technical Decisions/Constraints</h2>
+    <ul>
+        <li><strong>Dynamic Content Personalization</strong>: A core decision was to separate content definition from content delivery logic. By routing content through the <strong>Content Service</strong>, which integrates with the <strong>Access Key Service</strong> and <strong>Strapi CMS</strong>, UI elements can be dynamically filtered and tailored based on real-time user attributes (e.g., authentication status, role, country, journey progress) derived from access keys. This provides immense flexibility for A/B testing, targeted messaging, and adaptive user experiences.</li>
+        <li><strong>Hybrid Authentication Flow</strong>: The system supports both anonymous and authenticated user journeys. Anonymous sessions, managed in Redis for high throughput, can seamlessly transition to authenticated sessions (persisted in MySQL). This design minimizes friction for new users while ensuring data persistence for registered users.</li>
+        <li><strong>Centralized Content Management</strong>: Utilizing Strapi as a headless CMS mandates a clear separation of concerns between content creation and frontend presentation. This streamlines content updates and multi-language support, but introduces the complexity of content mapping and caching (handled by the Content Service and Redis).</li>
+        <li><strong>Robust Journey State Management</strong>: Implementing a dedicated <strong>Journey Service</strong> with a relational database (MySQL) was a key decision to handle complex, multi-step user flows. This ensures transactional integrity and allows users to resume journeys reliably. The service also enforces "journey integrity" through redirects, preventing users from skipping steps.</li>
+        <li><strong>Performance Optimization with Caching</strong>: Extensive use of Redis for caching (content, access keys, anonymous sessions) is a critical performance decision. This reduces latency and offloads load from primary databases and the CMS, but necessitates a robust cache invalidation strategy (e.g., Strapi webhooks triggering Content Service cache clears).</li>
+        <li><strong>Microservices Communication & Client Access</strong>: The choice of a microservices architecture introduced challenges in inter-service communication (RESTful API calls) and client access. The Next.js API proxy for the web frontend was a technical decision to simplify client-side interactions and manage CORS, while mobile apps connect directly.</li>
+    </ul>
+</body>
+</html>
+</head>
+</html>

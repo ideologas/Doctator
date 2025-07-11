@@ -1,0 +1,90 @@
+Your final task is to deliver a complete **Frontend Pages and Mechanisms Documentation** as a single, raw HTML file. This file must contain a dedicated, structured section for each distinct page or key mechanism you identified.
+
+**Your entire response must be ONLY the HTML content.** Do not include any other text, explanations, or markdown formatting. The response must start with `<html>` and end with `</html>`.
+
+**The HTML structure is critical and you must follow it strictly:**
+1.  A `<head>` section with a `<title>` for the entire document (e.g., "Frontend Pages and Mechanisms"). The filename will be generated from this title.
+2.  A `<body>` containing an `<h1>` for the document title.
+3.  For **each** page/mechanism, a dedicated `<div class="page-container">` with:
+    *   An `id` attribute for internal linking (e.g., `id="user-dashboard"`).
+    *   An `<h2>` containing the unique and descriptive name of the page or mechanism (e.g., "User Profile Page").
+    *   A `<p>` with a brief description of its purpose.
+    *   An `<h3>` with the text "Data Display".
+    *   A `<table>` listing all visible and editable data fields, with links to corresponding entities. Columns: `Field Name`, `Editable`, `Entity Link`, `Description`.
+    *   An `<h3>` with the text "User Actions".
+    *   A `<table>` describing key user interactions. Columns: `Action`, `Resulting Logic`.
+    *   An `<h3>` with the text "Key Components".
+    *   A `<ul>` listing the primary reusable components used on the page.
+    *   An `<h3>` with the text "Implementation Requirements".
+    *   A `<table>` for detailed business logic. Columns: `No.`, `Description`.
+
+**Example of a valid response structure:**
+```html
+<html>
+<head>
+    <title>Frontend Pages and Mechanisms</title>
+</head>
+<body>
+    <h1>Frontend Pages and Mechanisms</h1>
+
+    <div class="page-container" id="user-profile-page">
+        <h2>User Profile Page</h2>
+        <p>Allows a user to view and edit their profile information.</p>
+        
+        <h3>Data Display</h3>
+        <table>
+            <!-- Table headers -->
+            <tbody>
+                <tr>
+                    <td>Username</td>
+                    <td>No</td>
+                    <td><a href="entities/user.html#username">User.username</a></td>
+                    <td>Displays the user's unique username.</td>
+                </tr>
+                <tr>
+                    <td>Email Address</td>
+                    <td>Yes</td>
+                    <td><a href="entities/user.html#email">User.email</a></td>
+                    <td>Displays and allows editing of the user's email.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>User Actions</h3>
+        <table>
+            <!-- Table headers -->
+            <tbody>
+                <tr>
+                    <td>Click 'Save Changes'</td>
+                    <td>Triggers an API call to the backend to update the user's profile.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Key Components</h3>
+        <ul>
+            <li>UserProfileForm.tsx</li>
+            <li>EditableField.tsx</li>
+        </ul>
+
+        <h3>Implementation Requirements</h3>
+        <table>
+            <!-- Table headers -->
+            <tbody>
+                <tr>
+                    <td>IR-01</td>
+                    <td>On page load, fetches user data from the `/api/user/{id}` endpoint.</td>
+                </tr>
+                 <tr>
+                    <td>IR-02</td>
+                    <td>The 'Save Changes' button is disabled until a field is modified.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- ... other page divs would follow here ... -->
+</body>
+</html>
+```
+
+**Remember: Respond with ONLY the raw HTML content for all pages in a single file, strictly following the specified structure.** 

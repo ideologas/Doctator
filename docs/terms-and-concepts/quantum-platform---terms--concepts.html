@@ -1,0 +1,153 @@
+<html>
+<head>
+    <title>Quantum Platform - Terms & Concepts</title>
+</head>
+<body>
+    <h1>Quantum Platform - Terms & Concepts</h1>
+
+    <div class="concept-container" id="microservices-architecture">
+        <h2>Microservices Architecture</h2>
+        <p>The system is divided into a suite of independently deployable services, including Authentication, Content, AccessKey, and Journey services. Each service handles a specific business capability and communicates with others over the network, typically via HTTP APIs.</p>
+        <h3>Related Concepts</h3>
+        <ul>
+            <li><a href="#service-to-service-communication">Service-to-Service Communication</a></li>
+            <li><a href="#api-gateway-client-side-proxy">API Gateway (Client-Side Proxy)</a></li>
+            <li><a href="#access-key">Access Key</a></li>
+        </ul>
+    </div>
+
+    <div class="concept-container" id="api-gateway-client-side-proxy">
+        <h2>API Gateway (Client-Side Proxy)</h2>
+        <p>A pattern implemented in the Next.js frontend at `/api/proxy/[...path]`. It acts as a single entry point for the frontend application to communicate with the various backend microservices. This simplifies the frontend code, hides the complexity of the microservice topology, and centralizes concerns like authentication forwarding.</p>
+        <h3>Related Concepts</h3>
+        <ul>
+            <li><a href="#microservices-architecture">Microservices Architecture</a></li>
+        </ul>
+    </div>
+
+    <div class="concept-container" id="api-facade-client-side">
+        <h2>API Facade (Client-Side)</h2>
+        <p>A design pattern used in both the React Native and Next.js frontends. A central `Api` class aggregates multiple service-specific API clients (e.g., `ContentApi`, `AuthenticationApi`), providing a single, simplified interface for the rest of the application to interact with the backend.</p>
+        <h3>Related Concepts</h3>
+        <ul>
+            <li><a href="#type-safe-api-abstraction-frontend">Type-safe API Abstraction (Frontend)</a></li>
+        </ul>
+    </div>
+
+    <div class="concept-container" id="access-key">
+        <h2>Access Key</h2>
+        <p>A core backend concept representing a user's session state. It's a distributed, cache-based (Redis) object containing key-value pairs and wording flags that define a user's context (e.g., authentication status, role, country). It is used across microservices for dynamic content personalization and authorization.</p>
+        <h3>Related Concepts</h3>
+        <ul>
+            <li><a href="#access-controlled-content">Access-Controlled Content</a></li>
+            <li><a href="#anonymous-user-session">Anonymous User Session</a></li>
+            <li><a href="#microservices-architecture">Microservices Architecture</a></li>
+        </ul>
+    </div>
+
+    <div class="concept-container" id="access-controlled-content">
+        <h2>Access-Controlled Content</h2>
+        <p>A pattern where content fetched from the headless CMS (Strapi) is dynamically filtered by the Content Service before being sent to the client. Visibility rules, defined as `AccessGroup` and `Persona` entities in the CMS, are evaluated against the user's `Access Key` to personalize the content served.</p>
+        <h3>Related Concepts</h3>
+        <ul>
+            <li><a href="#access-key">Access Key</a></li>
+            <li><a href="#hierarchical-content-model">Hierarchical Content Model</a></li>
+        </ul>
+    </div>
+
+    <div class="concept-container" id="anonymous-user-session">
+        <h2>Anonymous User Session</h2>
+        <p>A mechanism to provide a temporary identity and session state for unauthenticated users. The Authentication Service issues a token for an anonymous user, and an associated `Access Key` is created. Upon login, the anonymous user's data can be merged with the registered user's state, providing a seamless experience.</p>
+        <h3>Related Concepts</h3>
+        <ul>
+            <li><a href="#access-key">Access Key</a></li>
+            <li><a href="#refresh-token-mechanism">Refresh Token Mechanism</a></li>
+        </ul>
+    </div>
+
+    <div class="concept-container" id="refresh-token-mechanism">
+        <h2>Refresh Token Mechanism</h2>
+        <p>A standard authentication pattern where a short-lived Access Token is used for API requests and a long-lived Refresh Token is used to obtain a new Access Token when the old one expires. This is implemented in both the frontend HTTP clients and the backend Authentication Service to maintain user sessions securely without frequent re-logins.</p>
+        <h3>Related Concepts</h3>
+        <ul>
+            <li><a href="#request-queue-for-token-refresh">Request Queue for Token Refresh</a></li>
+            <li><a href="#anonymous-user-session">Anonymous User Session</a></li>
+        </ul>
+    </div>
+
+    <div class="concept-container" id="request-queue-for-token-refresh">
+        <h2>Request Queue for Token Refresh</h2>
+        <p>A client-side pattern to handle concurrent API calls that fail with a 401 (Unauthorized) error. It uses a flag (`isRefreshing`) and a queue (`failedQueue`) to ensure that only one token refresh request is initiated. Subsequent failed requests are queued and automatically retried with the new token, preventing race conditions and multiple refresh calls.</p>
+        <h3>Related Concepts</h3>
+        <ul>
+            <li><a href="#refresh-token-mechanism">Refresh Token Mechanism</a></li>
+            <li><a href="#interceptor-pattern">Interceptor Pattern</a></li>
+        </ul>
+    </div>
+
+    <div class="concept-container" id="service-to-service-communication">
+        <h2>Service-to-Service Communication</h2>
+        <p>A pattern where backend microservices communicate directly with each other via internal HTTP APIs. These internal endpoints are secured using a static API key passed in the `x-api-key` header, distinguishing them from public, user-facing endpoints that use JWT-based authentication.</p>
+        <h3>Related Concepts</h3>
+        <ul>
+            <li><a href="#microservices-architecture">Microservices Architecture</a></li>
+        </ul>
+    </div>
+
+    <div class="concept-container" id="hierarchical-content-model">
+        <h2>Hierarchical Content Model</h2>
+        <p>The fundamental data structure used by the CMS (Strapi) and consumed by client applications. Content is represented as a tree of `ContentItem` objects, which can contain primitive `DataField`s and nested `Reference`s to other `ContentItem`s, allowing for complex, deeply nested, and reusable content components.</p>
+        <h3>Related Concepts</h3>
+        <ul>
+            <li><a href="#data-mapper-pattern">Data Mapper Pattern</a></li>
+            <li><a href="#access-controlled-content">Access-Controlled Content</a></li>
+        </ul>
+    </div>
+
+    <div class="concept-container" id="data-mapper-pattern">
+        <h2>Data Mapper Pattern</h2>
+        <p>Implemented in the `StrapiMapper` class in the Content Service. This pattern is responsible for transforming the raw, generic JSON data structure received from the Strapi CMS into the system's strongly-typed, domain-specific `Content` model, decoupling the application's domain logic from the specific CMS data format.</p>
+        <h3>Related Concepts</h3>
+        <ul>
+            <li><a href="#hierarchical-content-model">Hierarchical Content Model</a></li>
+        </ul>
+    </div>
+
+    <div class="concept-container" id="journey-state-machine">
+        <h2>Journey State Machine</h2>
+        <p>A backend pattern, centered around the `Journey`, `JourneyBranch`, and `JourneyStep` domain objects in the Journey Service. It models and persists the state of a complex, multi-step user flow. This allows for branching logic (different paths based on user answers) and ensures the user follows a valid sequence of steps.</p>
+        <h3>Related Concepts</h3>
+        <ul>
+            <li><a href="#journey-integrity-check">Journey Integrity Check</a></li>
+        </ul>
+    </div>
+
+    <div class="concept-container" id="journey-integrity-check">
+        <h2>Journey Integrity Check</h2>
+        <p>An endpoint and corresponding logic in the Journey Service that validates if a user is accessing the correct page (step) for their current journey state. If a user attempts to access a URL out of sequence, the system can redirect them to the last valid step, ensuring a consistent and guided user experience.</p>
+        <h3>Related Concepts</h3>
+        <ul>
+            <li><a href="#journey-state-machine">Journey State Machine</a></li>
+        </ul>
+    </div>
+
+    <div class="concept-container" id="type-safe-api-abstraction-frontend">
+        <h2>Type-safe API Abstraction (Frontend)</h2>
+        <p>A technique used in the frontend projects where advanced TypeScript features (Template Literal and Mapped Types) generate a complete `ApiMethodMap`. This allows developers to call any backend method using a simple string (e.g., `'content.getPage'`) while getting full, compile-time type safety for arguments and return values.</p>
+        <h3>Related Concepts</h3>
+        <ul>
+            <li><a href="#api-facade-client-side">API Facade (Client-Side)</a></li>
+        </ul>
+    </div>
+
+    <div class="concept-container" id="interceptor-pattern">
+        <h2>Interceptor Pattern</h2>
+        <p>Utilized in the frontend `Http` client (via Axios interceptors). This pattern intercepts outgoing requests to inject authentication tokens and intercepts incoming responses to globally handle errors, such as initiating the token refresh flow on a 401 error, thereby centralizing cross-cutting concerns.</p>
+        <h3>Related Concepts</h3>
+        <ul>
+            <li><a href="#request-queue-for-token-refresh">Request Queue for Token Refresh</a></li>
+        </ul>
+    </div>
+
+</body>
+</html>

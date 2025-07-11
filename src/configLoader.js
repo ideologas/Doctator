@@ -17,32 +17,38 @@ function loadConfig(configPath) {
         const configContent = fs.readFileSync(configPath, 'utf8');
         const config = JSON.parse(configContent);
 
-        // Basic validation
-        if (!config.steps || !Array.isArray(config.steps)) {
-            throw new Error('Configuration must have a "steps" array');
+        // Basic validation for the new structure
+        if (!config.execution_groups || !Array.isArray(config.execution_groups)) {
+            throw new Error('Configuration must have an "execution_groups" array.');
         }
 
-        if (config.steps.length === 0) {
-            throw new Error('Configuration must have at least one step');
+        if (config.execution_groups.length === 0) {
+            throw new Error('Configuration must have at least one execution group.');
         }
 
-        // Validate each step has required fields
-        config.steps.forEach((step, index) => {
-            if (!step.model) {
-                throw new Error(`Step ${index} is missing required "model" field`);
+        // Validate each step within each group
+        config.execution_groups.forEach((group, groupIndex) => {
+            if (!Array.isArray(group)) {
+                throw new Error(`Execution group ${groupIndex} is not a valid array.`);
             }
-            if (!step.initial_instruction_file) {
-                throw new Error(`Step ${index} is missing required "initial_instruction_file" field`);
-            }
-            if (!step.post_instruction_file) {
-                throw new Error(`Step ${index} is missing required "post_instruction_file" field`);
-            }
-            if (!step.input_folders || !Array.isArray(step.input_folders)) {
-                throw new Error(`Step ${index} is missing required "input_folders" array`);
-            }
-            if (!step.output_folder) {
-                throw new Error(`Step ${index} is missing required "output_folder" field`);
-            }
+            group.forEach((step, stepIndex) => {
+                const stepId = `Group ${groupIndex + 1}, Step ${stepIndex + 1}`;
+                if (!step.model) {
+                    throw new Error(`${stepId} is missing required "model" field.`);
+                }
+                if (!step.initial_instruction_file) {
+                    throw new Error(`${stepId} is missing required "initial_instruction_file" field.`);
+                }
+                if (!step.post_instruction_file) {
+                    throw new Error(`${stepId} is missing required "post_instruction_file" field.`);
+                }
+                if (!step.input_folders || !Array.isArray(step.input_folders)) {
+                    throw new Error(`${stepId} is missing required "input_folders" array.`);
+                }
+                if (!step.output_folder) {
+                    throw new Error(`${stepId} is missing required "output_folder" field.`);
+                }
+            });
         });
 
         // Validate Git configuration if present
@@ -54,7 +60,8 @@ function loadConfig(configPath) {
         // Replace template variables in paths
         const processedConfig = replaceTemplateVariables(config);
 
-        console.log(`✅ Configuration loaded successfully with ${processedConfig.steps.length} steps`);
+        const totalSteps = processedConfig.execution_groups.reduce((acc, group) => acc + group.length, 0);
+        console.log(`✅ Configuration loaded successfully with ${totalSteps} steps in ${processedConfig.execution_groups.length} execution groups.`);
         return processedConfig;
 
     } catch (error) {

@@ -1,0 +1,457 @@
+<html>
+<head>
+    <title>Backend APIs and Functions</title>
+</head>
+<body>
+    <h1>Backend APIs and Functions</h1>
+
+    <div class="function-container" id="SyncAccessKey">
+        <h2>Overview</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Type</th>
+                    <td>API Endpoint</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>Updates an existing <a href="entities/access-key.html">AccessKey</a> for an authenticated user based on the provided key-value pairs and wording flags. It applies restrictions to prevent frontend clients from modifying certain sensitive keys.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Implementation Requirements</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>IR-01</td>
+                    <td>
+                        The endpoint must identify if the user is anonymous or authenticated based on their <a href="glossary/claim.html">ClaimsPrincipal</a>.
+                    </td>
+                </tr>
+                <tr>
+                    <td>IR-02</td>
+                    <td>
+                        It must filter the incoming `KeyValuePairs` and `WordingFlags` from the request body using the `FrontEndAccessKeySyncRestrictionsService`. This service removes any keys or flags that are restricted for the given user type (anonymous or authenticated).
+                    </td>
+                </tr>
+                <tr>
+                    <td>IR-03</td>
+                    <td>
+                        The system shall fetch the existing <a href="entities/access-key.html">AccessKey</a> for the user from the <a href="glossary/cache.html">Cache</a> using the user's ID.
+                        <ul>
+                            <li>If no <a href="entities/access-key.html">AccessKey</a> is found, the endpoint must return a `404 Not Found` response.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>IR-04</td>
+                    <td>The `Sync` method on the existing <a href="entities/access-key.html">AccessKey</a> entity must be called to update it with the filtered data.</td>
+                </tr>
+                <tr>
+                    <td>IR-05</td>
+                    <td>
+                        The updated <a href="entities/access-key.html">AccessKey</a> must be saved back to the <a href="glossary/cache.html">Cache</a>.
+                        <ul>
+                            <li>If the user is anonymous, a 1-hour expiration time must be set on the cached entry.</li>
+                        </ul>
+                    </td>
+                </tr>
+                 <tr>
+                    <td>IR-06</td>
+                    <td>A `204 NoContent` status code must be returned upon successful update.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="function-container" id="GetAccessKey">
+        <h2>Overview</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Type</th>
+                    <td>API Endpoint</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>Retrieves the <a href="entities/access-key.html">AccessKey</a> for the currently authenticated user.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Implementation Requirements</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>IR-01</td>
+                    <td>
+                        The endpoint must extract the user's ID from the `ClaimsPrincipal`.
+                    </td>
+                </tr>
+                <tr>
+                    <td>IR-02</td>
+                    <td>
+                        It must attempt to fetch the <a href="entities/access-key.html">AccessKey</a> from the <a href="glossary/cache.html">Cache</a> using the user ID.
+                    </td>
+                </tr>
+                <tr>
+                    <td>IR-03</td>
+                    <td>
+                        If an <a href="entities/access-key.html">AccessKey</a> is not found in the cache, the endpoint must return a `404 Not Found` response.
+                    </td>
+                </tr>
+                <tr>
+                    <td>IR-04</td>
+                    <td>
+                        If the <a href="entities/access-key.html">AccessKey</a> is found, it must be mapped to a `GetAccessKeyResponse` object and returned with a `200 OK` status.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="function-container" id="SyncAccessKeyUsingApiKey">
+        <h2>Overview</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Type</th>
+                    <td>API Endpoint (Internal)</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>Synchronizes an <a href="entities/access-key.html">AccessKey</a> for a specified `userId`, intended for secure backend-to-backend communication. This endpoint is protected by an <a href="glossary/api-key.html">API Key</a> and can merge an anonymous user's session data into a registered user's session upon login.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Implementation Requirements</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>IR-01</td>
+                    <td>
+                        The request must be authenticated using an <a href="glossary/api-key.html">API Key</a> provided in the `x-api-key` header.
+                    </td>
+                </tr>
+                <tr>
+                    <td>IR-02</td>
+                    <td>The endpoint must fetch the existing <a href="entities/access-key.html">AccessKey</a> for both the target `userId` and the optional `anonymousUserId` from the <a href="glossary/cache.html">Cache</a>.</td>
+                </tr>
+                <tr>
+                    <td>IR-03</td>
+                    <td>
+                        Handle the case where the registered user's <a href="entities/access-key.html">AccessKey</a> does not exist:
+                        <ul>
+                            <li>If an anonymous user's <a href="entities/access-key.html">AccessKey</a> exists, its data must be synced to a new key for the registered `userId`. The anonymous key must then be removed from the cache.</li>
+                            <li>If no anonymous key exists, a new <a href="entities/access-key.html">AccessKey</a> is created from the request data and stored with a 1-hour expiration.</li>
+                        </ul>
+                    </td>
+                </tr>
+                 <tr>
+                    <td>IR-04</td>
+                    <td>
+                        Handle the case where the registered user's <a href="entities/access-key.html">AccessKey</a> already exists:
+                        <ul>
+                            <li>If an anonymous user's <a href="entities/access-key.html">AccessKey</a> also exists, its data is first merged into the registered user's key, and the anonymous key is removed from the cache.</li>
+                             <li>The data from the current request is then synced into the registered user's <a href="entities/access-key.html">AccessKey</a>.</li>
+                             <li>The final, updated <a href="entities/access-key.html">AccessKey</a> is saved back to the <a href="glossary/cache.html">Cache</a> without expiration.</li>
+                        </ul>
+                    </td>
+                </tr>
+                 <tr>
+                    <td>IR-05</td>
+                    <td>A `204 NoContent` status code must be returned on success.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="function-container" id="AnonymousLogin">
+        <h2>Overview</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Type</th>
+                    <td>API Endpoint</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>Creates a session for a new, anonymous user by generating access and refresh tokens and initializing their <a href="entities/access-key.html">AccessKey</a>.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Implementation Requirements</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>IR-01</td>
+                    <td>A new refresh token and expiry date must be generated.</td>
+                </tr>
+                <tr>
+                    <td>IR-02</td>
+                    <td>An <a href="entities/anonymous-user.html">AnonymousUser</a> entity must be created with a new `GUID` as its `UserId`.</td>
+                </tr>
+                <tr>
+                    <td>IR-03</td>
+                    <td>A <a href="glossary/jwt.html">JWT</a> access token must be generated containing the new `UserId` and the `anonymous-user` role.</td>
+                </tr>
+                 <tr>
+                    <td>IR-04</td>
+                    <td>The new <a href="entities/anonymous-user.html">AnonymousUser</a> object must be stored in the <a href="glossary/cache.html">Cache</a> with an appropriate expiration time.</td>
+                </tr>
+                 <tr>
+                    <td>IR-05</td>
+                    <td>The `AccessKeyService` must be called to create an initial <a href="entities/access-key.html">AccessKey</a> for the anonymous user with default properties (e.g., `isAuthenticated: no`).</td>
+                </tr>
+                <tr>
+                    <td>IR-06</td>
+                    <td>If the call to the `AccessKeyService` fails, the anonymous user data must be removed from the <a href="glossary/cache.html">Cache</a> to maintain data consistency.</td>
+                </tr>
+                <tr>
+                    <td>IR-07</td>
+                    <td>A `200 OK` response containing a <a href="entities/login-response.html">LoginResponse</a> with the new tokens must be returned on success.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="function-container" id="Login">
+        <h2>Overview</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Type</th>
+                    <td>API Endpoint</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>Authenticates a registered user, migrates their anonymous session data, and issues new access and refresh tokens.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Implementation Requirements</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>IR-01</td>
+                    <td>The endpoint must require an `anonymous-user` role, ensuring that only users with an active anonymous session can log in.</td>
+                </tr>
+                <tr>
+                    <td>IR-02</td>
+                    <td>It must validate the user's email and password. If credentials are invalid, a `401 Unauthorized` error must be returned.</td>
+                </tr>
+                <tr>
+                    <td>IR-03</td>
+                    <td>Upon successful authentication, new refresh and <a href="glossary/jwt.html">JWT</a> access tokens must be generated for the registered <a href="entities/user.html">User</a>. The new access token must include the `anonymous_user_id` from the incoming token's <a href="glossary/claim.html">claims</a>.</td>
+                </tr>
+                <tr>
+                    <td>IR-04</td>
+                    <td>All database and service calls must be wrapped in a <a href="glossary/transaction-scope.html">Transaction Scope</a> to ensure atomicity.</td>
+                </tr>
+                <tr>
+                    <td>IR-05</td>
+                    <td>The <a href="entities/user.html">User</a>'s record in the database must be updated with the new refresh token and its expiry date.</td>
+                </tr>
+                <tr>
+                    <td>IR-06</td>
+                    <td>The `AccessKeyService` must be called to synchronize the user's <a href="entities/access-key.html">AccessKey</a>. This call must pass the `anonymousUserId` to trigger the merge of the anonymous session data.</td>
+                </tr>
+                <tr>
+                    <td>IR-07</td>
+                    <td>If the transaction is successful, the endpoint must return a `200 OK` response with a <a href="entities/login-response.html">LoginResponse</a>. If it fails, the transaction must be rolled back.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="function-container" id="GetIntegrity">
+        <h2>Overview</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Type</th>
+                    <td>API Endpoint</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>Checks if a user is on a valid page within their active journey. If the user has just logged in, it merges their anonymous journey data. If the user is on an incorrect page, it provides the correct page key for redirection.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Implementation Requirements</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>IR-01</td>
+                    <td>The endpoint must inspect the incoming <a href="glossary/jwt.html">JWT</a> for an `anonymous_user_id` <a href="glossary/claim.html">claim</a>.</td>
+                </tr>
+                <tr>
+                    <td>IR-02</td>
+                    <td>If an `anonymous_user_id` is found, the system must search for an active <a href="entities/generic-journey.html">GenericJourney</a> associated with that ID. If one exists, its `UserId` must be updated to the newly authenticated user's ID to merge the sessions.</td>
+                </tr>
+                <tr>
+                    <td>IR-03</td>
+                    <td>The system must retrieve the active <a href="entities/generic-journey.html">GenericJourney</a> for the authenticated user. If no journey is found, a `404 Not Found` error must be returned.</td>
+                </tr>
+                <tr>
+                    <td>IR-04</td>
+                    <td>It must call the `GetRedirectStepPageKey` domain method on the journey entity, passing the current `pageKey`. This method determines if the user is on a valid step.</td>
+                </tr>
+                 <tr>
+                    <td>IR-05</td>
+                    <td>The endpoint must return a `200 OK` response with an `IntegrityResponse` object containing the correct `redirectStepPageKey` to which the client should navigate.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="function-container" id="GetPageByUrl">
+        <h2>Overview</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Type</th>
+                    <td>API Endpoint</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>Retrieves the content for a specific page, identified by its URL slug. The returned content is personalized based on the user's <a href="entities/access-key.html">AccessKey</a>.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Implementation Requirements</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>IR-01</td>
+                    <td>The endpoint must receive a page `url` as a query parameter.</td>
+                </tr>
+                <tr>
+                    <td>IR-02</td>
+                    <td>It must first fetch the current user's <a href="entities/access-key.html">AccessKey</a> by calling the `AccessKeyService`.</td>
+                </tr>
+                <tr>
+                    <td>IR-03</td>
+                    <td>
+                        Using the language from the <a href="entities/access-key.html">AccessKey</a>, it queries the CMS for page content matching the URL. The query process must:
+                        <ul>
+                             <li>First, check a <a href="glossary/cache.html">Cache</a> (e.g., Redis) for the requested content.</li>
+                             <li>If not found in the cache, it must query the Strapi API at `/api/pages?filters[URL][$eq]={pageUrl}`.</li>
+                             <li>The retrieved content must be stored in the <a href="glossary/cache.html">Cache</a> for future requests.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>IR-04</td>
+                    <td>The fetched <a href="entities/content.html">Content</a> must be processed by applying the user's <a href="entities/access-key.html">AccessKey</a> to filter out any content items or references not meant for the user.</td>
+                </tr>
+                <tr>
+                    <td>IR-05</td>
+                    <td>If, after filtering, no content remains, the endpoint must return a `404 Not Found` response.</td>
+                </tr>
+                 <tr>
+                    <td>IR-06</td>
+                    <td>If content is available, it must be mapped to a `UiContentResponse` and returned with a `200 OK` status.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="function-container" id="RemoveCachedContent">
+        <h2>Overview</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Type</th>
+                    <td>API Endpoint (Webhook)</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>Clears all entries from the Content Service's <a href="glossary/cache.html">Cache</a>. This is designed to be triggered by a webhook from the CMS when content is updated, ensuring users receive fresh data.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Implementation Requirements</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>IR-01</td>
+                    <td>The endpoint must be secured by a pre-configured <a href="glossary/api-key.html">API Key</a> to prevent unauthorized access.</td>
+                </tr>
+                <tr>
+                    <td>IR-02</td>
+                    <td>Upon receiving a valid request, it must connect to the <a href="glossary/cache.html">Cache</a> (Redis).</td>
+                </tr>
+                <tr>
+                    <td>IR-03</td>
+                    <td>It must issue a command to remove all keys that have a prefix specific to the Content Service instance (e.g., `prod-content-service-*`).</td>
+                </tr>
+                <tr>
+                    <td>IR-04</td>
+                    <td>The system should log the successful cache-clearing event for monitoring purposes.</td>
+                </tr>
+                <tr>
+                    <td>IR-05</td>
+                    <td>A `204 NoContent` status code must be returned to the caller to indicate successful execution.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+</body>
+</html>

@@ -1,0 +1,80 @@
+Your final task is to deliver a complete **External Integrations Documentation** as a single, raw HTML file. This file must contain a dedicated, structured section for each distinct external integration you identified.
+
+**Your entire response must be ONLY the HTML content.** Do not include any other text, explanations, or markdown formatting. The response must start with `<html>` and end with `</html>`.
+
+**The HTML structure is critical and you must follow it strictly:**
+1.  A `<head>` section with a `<title>` for the entire document (e.g., "External Integrations"). The filename will be generated from this title.
+2.  A `<body>` containing an `<h1>` for the document title.
+3.  For **each** integration, a dedicated `<div class="integration-container">` with:
+    *   An `id` attribute for internal linking (e.g., `id="stripe-payment-gateway"`).
+    *   An `<h2>` with the integration name.
+    *   A `<p>` with a brief description of its purpose.
+    *   An `<h3>` with the text "Details".
+    *   A `<table>` with the following rows: `Authentication Method`, `Key Endpoints/Methods`, `Error Handling`.
+    *   An `<h3>` with the text "Data Sent".
+    *   A `<table>` listing the data sent to the integration. Columns: `Parameter`, `Type`, `Description`.
+    *   An `<h3>` with the text "Data Received".
+    *   A `<table>` listing the data received from the integration. Columns: `Parameter`, `Type`, `Description`.
+
+**Example of a valid response structure:**
+```html
+<html>
+<head>
+    <title>External Integrations</title>
+</head>
+<body>
+    <h1>External Integrations</h1>
+
+    <div class="integration-container" id="stripe-api">
+        <h2>Stripe Payment Gateway</h2>
+        <p>Handles all credit card processing and payment transactions.</p>
+        
+        <h3>Details</h3>
+        <table>
+            <tbody>
+                <tr><th>Authentication Method</th><td>API Key (Bearer Token)</td></tr>
+                <tr><th>Key Endpoints/Methods</th><td>/v1/charges, /v1/customers</td></tr>
+                <tr><th>Error Handling</th><td>Retries on network failure; logs all API errors for manual review.</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Data Sent</h3>
+        <table>
+            <!-- Table headers -->
+            <tbody>
+                <tr>
+                    <td>amount</td>
+                    <td>integer</td>
+                    <td>The payment amount in cents.</td>
+                </tr>
+                <tr>
+                    <td>customer_id</td>
+                    <td>string</td>
+                    <td>The ID of the <a href="entities/customer.html">Customer</a> making the payment.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Data Received</h3>
+        <table>
+            <!-- Table headers -->
+            <tbody>
+                <tr>
+                    <td>id</td>
+                    <td>string</td>
+                    <td>The unique transaction ID from Stripe.</td>
+                </tr>
+                 <tr>
+                    <td>status</td>
+                    <td>string</td>
+                    <td>The status of the charge (e.g., "succeeded", "failed").</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- ... other integration divs would follow here ... -->
+</body>
+</html>
+```
+
+**Remember: Respond with ONLY the raw HTML content for all integrations in a single file, strictly following the specified structure.** 

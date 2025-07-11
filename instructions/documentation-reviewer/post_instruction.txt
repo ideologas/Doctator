@@ -1,0 +1,37 @@
+Your final task is to deliver a **Documentation Review Report** as a single, raw HTML file. This file must contain a dedicated, structured section for each inconsistency or logical error you identified.
+
+**Your entire response must be ONLY the HTML content.** Do not include any other text, explanations, or markdown formatting. The response must start with `<html>` and end with `</html>`.
+
+**The HTML structure is critical and you must follow it strictly:**
+1.  A `<head>` section with a `<title>` for the entire document (e.g., "Documentation Review Report"). The filename will be generated from this title.
+2.  A `<body>` containing an `<h1>` for the document title.
+3.  If no issues are found, the body should contain a single `<p>` tag with the text: "No inconsistencies or logical errors were found in the documentation."
+4.  If issues are found, for **each** issue, create a dedicated `<div class="issue-container">` with:
+    *   An `<h2>` describing the issue concisely (e.g., "Inconsistent Entity Reference").
+    *   An `<h3>` with the text "Problem Details".
+    *   A `<p>` with a detailed explanation of the problem, including references to the specific documents or sections that are in conflict.
+    *   An `<h3>` with the text "Suggested Solution".
+    *   A `<p>` with a clear, actionable suggestion for how to resolve the inconsistency.
+
+**Example of a valid response structure with an issue:**
+```html
+<html>
+<head>
+    <title>Documentation Review Report</title>
+</head>
+<body>
+    <h1>Documentation Review Report</h1>
+
+    <div class="issue-container">
+        <h2>Inconsistent Entity Reference</h2>
+        <h3>Problem Details</h3>
+        <p>The "Backend APIs" documentation for the "CreateOrder" function references a "ShippingDetails" entity. However, the "Domain Entities" documentation does not define a "ShippingDetails" entity. It only defines a "CustomerAddress" entity.</p>
+        <h3>Suggested Solution</h3>
+        <p>Verify if "ShippingDetails" is a distinct entity that needs to be added to the Domain Entities document, or if the "CreateOrder" function should be updated to use the existing "CustomerAddress" entity instead.</p>
+    </div>
+    <!-- ... other issue divs would follow here ... -->
+</body>
+</html>
+```
+
+**Remember: Respond with ONLY the raw HTML content for your report, strictly following the specified structure.** 

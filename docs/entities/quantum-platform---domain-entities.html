@@ -1,0 +1,1565 @@
+<html>
+<head>
+    <title>Quantum Platform - Domain Entities</title>
+</head>
+<body>
+    <h1>Quantum Platform - Domain Entities</h1>
+
+    <div class="entity-container" id="user">
+        <h2>User</h2>
+        <p>Represents a registered, authenticated individual or business entity interacting with the platform. A user has a profile, credentials, and associated context for personalized experiences.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Owns</td>
+                    <td><a href="#access-key">Access Key</a></td>
+                    <td>1..1</td>
+                    <td>Each user has one Access Key that stores their context for personalization.</td>
+                </tr>
+                <tr>
+                    <td>LI-02</td>
+                    <td>Undertakes</td>
+                    <td><a href="#journey">Journey</a></td>
+                    <td>0..*</td>
+                    <td>A user can initiate and progress through multiple journeys.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>Id</td>
+                    <td>guid</td>
+                    <td>Y</td>
+                    <td>Unique identifier for the user.</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>Email</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The user's unique email address, used for login.</td>
+                </tr>
+                <tr>
+                    <td>FD-03</td>
+                    <td>PasswordHash</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The hashed password for authentication.</td>
+                </tr>
+                <tr>
+                    <td>FD-04</td>
+                    <td>FirstName</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>The user's first name.</td>
+                </tr>
+                <tr>
+                    <td>FD-05</td>
+                    <td>LastName</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>The user's last name.</td>
+                </tr>
+                <tr>
+                    <td>FD-06</td>
+                    <td>CompanyName</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>The name of the company the user represents, if applicable.</td>
+                </tr>
+                <tr>
+                    <td>FD-07</td>
+                    <td>Role</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The role of the user (e.g., 'individual', 'business'). Used for personalization.</td>
+                </tr>
+                <tr>
+                    <td>FD-08</td>
+                    <td>CountryCode</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The user's country code (e.g., 'lt', 'us').</td>
+                </tr>
+                <tr>
+                    <td>FD-09</td>
+                    <td>PhoneNumber</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>The user's phone number.</td>
+                </tr>
+                <tr>
+                    <td>FD-10</td>
+                    <td>RefreshToken</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>The token used to refresh the authentication session.</td>
+                </tr>
+                <tr>
+                    <td>FD-11</td>
+                    <td>RefreshTokenExpiryTime</td>
+                    <td>timestamp</td>
+                    <td>N</td>
+                    <td>The expiration date and time for the refresh token.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="anonymous-user">
+        <h2>Anonymous User</h2>
+        <p>Represents a temporary, non-authenticated visitor to the platform. An anonymous session is created to track user context and journey progress before they register or log in.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Owns</td>
+                    <td><a href="#access-key">Access Key</a></td>
+                    <td>1..1</td>
+                    <td>Each anonymous user has one Access Key that stores their temporary context. This key is merged upon login.</td>
+                </tr>
+                <tr>
+                    <td>LI-02</td>
+                    <td>Undertakes</td>
+                    <td><a href="#journey">Journey</a></td>
+                    <td>0..*</td>
+                    <td>An anonymous user can start and progress through journeys, which can be linked to their account upon registration.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>UserId</td>
+                    <td>guid</td>
+                    <td>Y</td>
+                    <td>Unique temporary identifier for the anonymous session.</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>RefreshToken</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The token used to refresh the anonymous authentication session.</td>
+                </tr>
+                <tr>
+                    <td>FD-03</td>
+                    <td>RefreshTokenExpiryDate</td>
+                    <td>timestamp</td>
+                    <td>Y</td>
+                    <td>The expiration date and time for the refresh token.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="access-key">
+        <h2>Access Key</h2>
+        <p>A dynamic set of key-value pairs and flags representing a user's current context. It is used by the Content Service to filter and personalize the content delivered to the user. It is the central piece of the personalization engine.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Owned by</td>
+                    <td><a href="#user">User</a></td>
+                    <td>1..1</td>
+                    <td>An Access Key is associated with a single registered User.</td>
+                </tr>
+                <tr>
+                    <td>LI-02</td>
+                    <td>Owned by</td>
+                    <td><a href="#anonymous-user">Anonymous User</a></td>
+                    <td>1..1</td>
+                    <td>An Access Key is associated with a single Anonymous User session.</td>
+                </tr>
+                <tr>
+                    <td>LI-03</td>
+                    <td>Used by</td>
+                    <td><a href="#access-group">Access Group</a></td>
+                    <td>*..*</td>
+                    <td>The key-value pairs and flags are evaluated against Access Group rules to determine content visibility.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>KeyValuePairs</td>
+                    <td>dictionary&lt;text, text&gt;</td>
+                    <td>Y</td>
+                    <td>A collection of key-value pairs describing the user's context (e.g., 'country:lt', 'role:individual').</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>WordingFlags</td>
+                    <td>list&lt;text&gt;</td>
+                    <td>Y</td>
+                    <td>A list of flags indicating user state or choices (e.g., 'JourneyStarted', 'question_key-answer_key').</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="tenant">
+        <h2>Tenant</h2>
+        <p>Represents a top-level instance of the application, with its own branding, domain, configuration, and content. It provides multi-tenancy for the platform.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Has</td>
+                    <td><a href="#menu-item">Navigation Item</a></td>
+                    <td>0..*</td>
+                    <td>A Tenant has a main navigation menu composed of multiple navigation items.</td>
+                </tr>
+                <tr>
+                    <td>LI-02</td>
+                    <td>Defines</td>
+                    <td><a href="#page">Page</a></td>
+                    <td>*..*</td>
+                    <td>A tenant has a set of pages that constitute its website or application.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>Key</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>A unique string key that identifies the tenant (e.g., 'metasite', 'exacaster').</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>AppName</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The display name of the application for this tenant.</td>
+                </tr>
+                <tr>
+                    <td>FD-03</td>
+                    <td>Logo</td>
+                    <td>media</td>
+                    <td>N</td>
+                    <td>The logo image for the tenant.</td>
+                </tr>
+                <tr>
+                    <td>FD-04</td>
+                    <td>ThemeColor</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>The primary theme color for the tenant's UI.</td>
+                </tr>
+                <tr>
+                    <td>FD-05</td>
+                    <td>Description</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>A brief description of the tenant.</td>
+                </tr>
+                <tr>
+                    <td>FD-06</td>
+                    <td>AppNameInHeader</td>
+                    <td>boolean</td>
+                    <td>Y</td>
+                    <td>Whether to display the AppName in the header.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="page">
+        <h2>Page</h2>
+        <p>A fundamental unit of content representing a screen or view in the application. It acts as a container for other content components like panels and banners, and can be part of a user journey.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Contains</td>
+                    <td><a href="#panel">Panel</a></td>
+                    <td>0..*</td>
+                    <td>A page is composed of one or more panels that structure its content.</td>
+                </tr>
+                <tr>
+                    <td>LI-02</td>
+                    <td>Filtered by</td>
+                    <td><a href="#access-group">Access Group</a></td>
+                    <td>0..*</td>
+                    <td>Access groups control the visibility of the entire page for different users.</td>
+                </tr>
+                <tr>
+                    <td>LI-03</td>
+                    <td>Can be part of</td>
+                    <td><a href="#journey">Journey</a></td>
+                    <td>0..1</td>
+                    <td>A page can be a step within a defined user journey.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>Key</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>A unique, human-readable key for the page (e.g., 'landing', 'login').</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>Title</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The display title of the page, often shown in the browser tab.</td>
+                </tr>
+                <tr>
+                    <td>FD-03</td>
+                    <td>URL</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The URL path for accessing the page (e.g., '/', '/login').</td>
+                </tr>
+                <tr>
+                    <td>FD-04</td>
+                    <td>BackPageKey</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>The key of the page to navigate to when a 'back' action is performed.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="journey">
+        <h2>Journey</h2>
+        <p>Represents a stateful, multi-step process or workflow that a user undertakes. It tracks the user's progress through a sequence of pages (steps).</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Undertaken by</td>
+                    <td><a href="#user">User</a></td>
+                    <td>1..1</td>
+                    <td>Each journey instance is associated with a specific user.</td>
+                </tr>
+                <tr>
+                    <td>LI-02</td>
+                    <td>Consists of</td>
+                    <td><a href="#journey-step">Journey Step</a></td>
+                    <td>1..*</td>
+                    <td>A journey is composed of a sequence of steps.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>Type</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The type of journey (e.g., 'onboarding', 'insurance_quote').</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>UserId</td>
+                    <td>guid</td>
+                    <td>Y</td>
+                    <td>The unique identifier of the user undertaking the journey.</td>
+                </tr>
+                <tr>
+                    <td>FD-03</td>
+                    <td>Status</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The current status of the journey (e.g., 'Started', 'Submitted', 'Completed').</td>
+                </tr>
+                <tr>
+                    <td>FD-04</td>
+                    <td>StartDate</td>
+                    <td>timestamp</td>
+                    <td>Y</td>
+                    <td>The date and time when the journey was started.</td>
+                </tr>
+                <tr>
+                    <td>FD-05</td>
+                    <td>SubmissionDate</td>
+                    <td>timestamp</td>
+                    <td>N</td>
+                    <td>The date and time when the journey was submitted.</td>
+                </tr>
+                <tr>
+                    <td>FD-06</td>
+                    <td>ExpirationDate</td>
+                    <td>timestamp</td>
+                    <td>N</td>
+                    <td>The date and time when the journey will expire.</td>
+                </tr>
+                <tr>
+                    <td>FD-07</td>
+                    <td>WordingFlags</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>A semicolon-separated list of flags accumulated during the journey.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="journey-step">
+        <h2>Journey Step</h2>
+        <p>A single step within a Journey, representing a user's transition from one page to another. It can store data captured at that step.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Part of</td>
+                    <td><a href="#journey">Journey</a></td>
+                    <td>1..1</td>
+                    <td>Each step belongs to a single journey instance.</td>
+                </tr>
+                <tr>
+                    <td>LI-02</td>
+                    <td>Can have</td>
+                    <td><a href="#question-form">Question Form</a></td>
+                    <td>0..1</td>
+                    <td>A step can represent the submission of a question and its answer.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>SequenceNumber</td>
+                    <td>integer</td>
+                    <td>Y</td>
+                    <td>The order of this step within its journey branch.</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>CurrentPageKey</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The key of the page where the step was initiated.</td>
+                </tr>
+                <tr>
+                    <td>FD-03</td>
+                    <td>NextPageKey</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The key of the page the user navigated to, completing the step.</td>
+                </tr>
+                <tr>
+                    <td>FD-04</td>
+                    <td>SubmitDate</td>
+                    <td>timestamp</td>
+                    <td>Y</td>
+                    <td>The date and time the step was submitted.</td>
+                </tr>
+                <tr>
+                    <td>FD-05</td>
+                    <td>JourneyGenericDataList</td>
+                    <td>json</td>
+                    <td>N</td>
+                    <td>A list of generic JSON data captured during this step.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="question-form">
+        <h2>Question Form</h2>
+        <p>Represents a user's answer to a specific question within a journey. This is a specialized type of Journey Step data.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Belongs to</td>
+                    <td><a href="#journey-step">Journey Step</a></td>
+                    <td>1..1</td>
+                    <td>Each Question Form is data for a single journey step.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>QuestionKey</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The unique key identifying the question being answered.</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>AnswerKey</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The key representing the selected answer.</td>
+                </tr>
+                <tr>
+                    <td>FD-03</td>
+                    <td>AnswerValue</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>Optional additional value associated with the answer (e.g., free text input).</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="persona">
+        <h2>Persona</h2>
+        <p>A defined user profile or segment based on a set of attributes. Personas are used in Access Groups to control content visibility for different types of users.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Used in</td>
+                    <td><a href="#access-group">Access Group</a></td>
+                    <td>*..*</td>
+                    <td>A Persona can be used in multiple Access Groups to define show/hide rules.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>Key</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>Unique key for the persona (e.g., 'AuthenticatedBusinessUser').</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>WordingFlags</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>A semicolon-separated list of flags that must be present in the user's Access Key.</td>
+                </tr>
+                <tr>
+                    <td>FD-03</td>
+                    <td>IsAuthenticated</td>
+                    <td>enumeration</td>
+                    <td>N</td>
+                    <td>Specifies if the user must be authenticated ('Yes', 'No', or 'Any').</td>
+                </tr>
+                <tr>
+                    <td>FD-04</td>
+                    <td>Tenant</td>
+                    <td>enumeration</td>
+                    <td>N</td>
+                    <td>The tenant the user must belong to.</td>
+                </tr>
+                <tr>
+                    <td>FD-05</td>
+                    <td>Role</td>
+                    <td>enumeration</td>
+                    <td>N</td>
+                    <td>The role the user must have.</td>
+                </tr>
+                <tr>
+                    <td>FD-06</td>
+                    <td>Country</td>
+                    <td>enumeration</td>
+                    <td>N</td>
+                    <td>The country the user must be from.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="access-group">
+        <h2>Access Group</h2>
+        <p>A container for a set of rules that defines content visibility. It works by including a list of 'ShowTo' personas and excluding a list of 'HideFrom' personas. Content is visible if the user matches a 'ShowTo' persona and does not match any 'HideFrom' persona.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Applies to</td>
+                    <td><a href="#page">Page</a></td>
+                    <td>*..*</td>
+                    <td>An Access Group can control the visibility of multiple pages.</td>
+                </tr>
+                <tr>
+                    <td>LI-02</td>
+                    <td>Includes</td>
+                    <td><a href="#persona">Persona</a></td>
+                    <td>0..*</td>
+                    <td>An Access Group is defined by a set of Personas.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>Key</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>Unique key for the access group.</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>ShowTo</td>
+                    <td>relation</td>
+                    <td>N</td>
+                    <td>A list of Personas. A user must match at least one of these to see the content.</td>
+                </tr>
+                <tr>
+                    <td>FD-03</td>
+                    <td>HideFrom</td>
+                    <td>relation</td>
+                    <td>N</td>
+                    <td>A list of Personas. If a user matches any of these, they will not see the content, regardless of the ShowTo list.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="panel">
+        <h2>Panel</h2>
+        <p>A structural component within a Page used to group and organize content. It can be divided into multiple columns with specified distributions.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Contained in</td>
+                    <td><a href="#page">Page</a></td>
+                    <td>*..1</td>
+                    <td>A panel is a component of a single page.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>Key</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>A unique key for identifying the panel.</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>Title</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>An optional title for the panel.</td>
+                </tr>
+                <tr>
+                    <td>FD-03</td>
+                    <td>ColumnDistribution</td>
+                    <td>enumeration</td>
+                    <td>N</td>
+                    <td>The layout of columns within the panel (e.g., 'single', 'two-1:1', 'two-2:1').</td>
+                </tr>
+                <tr>
+                    <td>FD-04</td>
+                    <td>Columns</td>
+                    <td>component</td>
+                    <td>N</td>
+                    <td>The collection of column components that hold the actual content items.</td>
+                </tr>
+                <tr>
+                    <td>FD-05</td>
+                    <td>BackgroundColor</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>The background color of the panel for the light theme.</td>
+                </tr>
+                <tr>
+                    <td>FD-06</td>
+                    <td>BackgroundColorDarkTheme</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>The background color of the panel for the dark theme.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="content-block">
+        <h2>Content Block</h2>
+        <p>A reusable block of content, typically containing rich text (Markdown) and a title. It's a fundamental building block for displaying formatted text and images within pages.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Can be part of</td>
+                    <td><a href="#page">Page</a></td>
+                    <td>*..*</td>
+                    <td>A content block can be placed on multiple pages via panels and columns.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>Key</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>A unique key identifying the content block.</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>Title</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>The title of the content block.</td>
+                </tr>
+                <tr>
+                    <td>FD-03</td>
+                    <td>Content</td>
+                    <td>richtext</td>
+                    <td>N</td>
+                    <td>The main body of content, supporting Markdown and rich text formatting.</td>
+                </tr>
+                <tr>
+                    <td>FD-04</td>
+                    <td>TitleAlignment</td>
+                    <td>enumeration</td>
+                    <td>N</td>
+                    <td>The horizontal alignment of the title (left, center, right).</td>
+                </tr>
+                <tr>
+                    <td>FD-05</td>
+                    <td>ContentAlignment</td>
+                    <td>enumeration</td>
+                    <td>N</td>
+                    <td>The horizontal alignment of the content (left, center, right).</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="button">
+        <h2>Button</h2>
+        <p>A clickable UI element that can trigger navigation to a URL or a page by its key, or execute a custom action within the application.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Can be on</td>
+                    <td><a href="#page">Page</a></td>
+                    <td>*..*</td>
+                    <td>Buttons can be placed on various pages within different components.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>Key</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>A unique key for the button.</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>Title</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The text displayed on the button.</td>
+                </tr>
+                <tr>
+                    <td>FD-03</td>
+                    <td>URL</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>The URL to navigate to when the button is clicked.</td>
+                </tr>
+                <tr>
+                    <td>FD-04</td>
+                    <td>PageKey</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>The key of the internal page to navigate to.</td>
+                </tr>
+                <tr>
+                    <td>FD-05</td>
+                    <td>Type</td>
+                    <td>enumeration</td>
+                    <td>N</td>
+                    <td>The visual style of the button (e.g., 'primary', 'secondary', 'link').</td>
+                </tr>
+                <tr>
+                    <td>FD-06</td>
+                    <td>CustomAction</td>
+                    <td>enumeration</td>
+                    <td>N</td>
+                    <td>The key of a custom action to execute on click (e.g., 'submit-form', 'start-journey').</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="menu-item">
+        <h2>Navigation Item</h2>
+        <p>Represents an item in a navigation menu, such as the main header or a side menu. It can have a link and contain a nested list of sub-items.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Has sub-items</td>
+                    <td><a href="#menu-item">Navigation Item</a></td>
+                    <td>0..*</td>
+                    <td>A navigation item can have a nested list of other navigation items, creating a hierarchical menu.</td>
+                </tr>
+                <tr>
+                    <td>LI-02</td>
+                    <td>Part of menu for</td>
+                    <td><a href="#tenant">Tenant</a></td>
+                    <td>*..1</td>
+                    <td>Navigation items make up the main menu for a tenant.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>Name</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The display text for the menu item.</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>URL</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>The URL to navigate to when the item is clicked.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="country">
+        <h2>Country</h2>
+        <p>Represents a country, providing standardized codes and names. Used in user profiles and forms.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Associated with</td>
+                    <td><a href="#user">User</a></td>
+                    <td>*..1</td>
+                    <td>A country can be associated with many users.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>code</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The two-letter ISO country code (e.g., 'US', 'GB').</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>label</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The full name of the country (e.g., 'United States', 'United Kingdom').</td>
+                </tr>
+                <tr>
+                    <td>FD-03</td>
+                    <td>phone</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The international phone calling code for the country.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="card">
+        <h2>Card</h2>
+        <p>A UI component that displays content in a card format, often containing an image, title, text, and buttons.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Contains</td>
+                    <td><a href="#button">Button</a></td>
+                    <td>0..*</td>
+                    <td>A card can contain one or more buttons.</td>
+                </tr>
+                <tr>
+                    <td>LI-02</td>
+                    <td>Contains</td>
+                    <td><a href="#content-block">Content Block</a></td>
+                    <td>0..1</td>
+                    <td>A card can display a content block.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>Title</td>
+                    <td>text</td>
+                    <td>N</td>
+                    <td>The title of the card.</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>Content</td>
+                    <td>richtext</td>
+                    <td>N</td>
+                    <td>The body text of the card.</td>
+                </tr>
+                <tr>
+                    <td>FD-03</td>
+                    <td>Image</td>
+                    <td>media</td>
+                    <td>N</td>
+                    <td>An image associated with the card.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="carousel">
+        <h2>Carousel</h2>
+        <p>A UI component for displaying a series of rotating slides, typically images or other content items.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Contains</td>
+                    <td><a href="#slide">Slide</a></td>
+                    <td>1..*</td>
+                    <td>A carousel is composed of one or more slides.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>Key</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>A unique key identifying the carousel.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="slide">
+        <h2>Slide</h2>
+        <p>A single item within a Carousel, usually consisting of an image.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Part of</td>
+                    <td><a href="#carousel">Carousel</a></td>
+                    <td>1..1</td>
+                    <td>A slide belongs to exactly one carousel.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>Key</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>A unique key for the slide.</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>Image</td>
+                    <td>media</td>
+                    <td>Y</td>
+                    <td>The image to be displayed for this slide.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="alert">
+        <h2>Alert</h2>
+        <p>A UI component for displaying important, typically transient, messages to the user with a specific severity level.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LI-01</td>
+                    <td>Can be on</td>
+                    <td><a href="#page">Page</a></td>
+                    <td>*..*</td>
+                    <td>Alerts can be placed on various pages.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>Key</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>A unique key identifying the alert.</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>Content</td>
+                    <td>richtext</td>
+                    <td>Y</td>
+                    <td>The message content of the alert.</td>
+                </tr>
+                <tr>
+                    <td>FD-03</td>
+                    <td>Severity</td>
+                    <td>enumeration</td>
+                    <td>Y</td>
+                    <td>The severity of the alert (e.g., 'success', 'info', 'warning', 'error').</td>
+                </tr>
+                <tr>
+                    <td>FD-04</td>
+                    <td>FullWidth</td>
+                    <td>boolean</td>
+                    <td>Y</td>
+                    <td>Specifies if the alert should span the full width of its container.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="table">
+        <h2>Table</h2>
+        <p>A UI component for displaying structured data in a tabular format. The table definition specifies columns and a data source URL.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>DataUrl</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The URL from which the table data is fetched.</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>Columns</td>
+                    <td>component</td>
+                    <td>Y</td>
+                    <td>A list of column definitions, including header text, data path, and value format.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="entity-container" id="label">
+        <h2>Label</h2>
+        <p>A key-value pair used for managing global text snippets, translations, and other static strings in the CMS. This allows for centralized content management of UI text.</p>
+        
+        <h3>Links</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Entity</th>
+                    <th>Cardinality</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+
+        <h3>Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FD-01</td>
+                    <td>Key</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The unique key used to retrieve the label's value in the frontend.</td>
+                </tr>
+                <tr>
+                    <td>FD-02</td>
+                    <td>Value</td>
+                    <td>text</td>
+                    <td>Y</td>
+                    <td>The text content of the label. This field is localizable.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

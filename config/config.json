@@ -52,6 +52,74 @@
                     "docs/terms-and-concepts"
                 ],
                 "output_folder": "docs/backend"
+            },
+            {
+                "name": "FrontendExpert",
+                "model": "gemini-2.5-pro",
+                "temperature": 0.1,
+                "initial_instruction_file": "instructions/frontend-expert/initial_instruction.txt",
+                "post_instruction_file": "instructions/frontend-expert/post_instruction.txt",
+                "input_folders": [
+                    "chunks",
+                    "docs/entities",
+                    "docs/terms-and-concepts"
+                ],
+                "output_folder": "docs/frontend"
+            }
+        ],
+        [
+            {
+                "name": "ExternalIntegrationsExpert",
+                "model": "gemini-2.5-pro",
+                "temperature": 0.1,
+                "initial_instruction_file": "instructions/external-integrations-expert/initial_instruction.txt",
+                "post_instruction_file": "instructions/external-integrations-expert/post_instruction.txt",
+                "input_folders": [
+                    "chunks",
+                    "docs/entities",
+                    "docs/terms-and-concepts",
+                    "docs/backend"
+                ],
+                "output_folder": "docs/external-integrations"
+            }
+        ],
+        [
+            {
+                "name": "DocumentationReviewer",
+                "model": "gemini-2.5-pro",
+                "temperature": 0.5,
+                "initial_instruction_file": "instructions/documentation-reviewer/initial_instruction.txt",
+                "post_instruction_file": "instructions/documentation-reviewer/post_instruction.txt",
+                "input_folders": [
+                    "docs/overview",
+                    "docs/technology",
+                    "docs/entities",
+                    "docs/terms-and-concepts",
+                    "docs/backend",
+                    "docs/frontend",
+                    "docs/external-integrations"
+                ],
+                "output_folder": "docs/review-reports"
+            }
+        ],
+        [
+            {
+                "name": "DocumentationPublisher",
+                "model": "gemini-2.5-pro",
+                "temperature": 0.1,
+                "initial_instruction_file": "instructions/documentation-publisher/initial_instruction.txt",
+                "post_instruction_file": "instructions/documentation-publisher/post_instruction.txt",
+                "input_folders": [
+                    "docs/overview",
+                    "docs/technology",
+                    "docs/entities",
+                    "docs/terms-and-concepts",
+                    "docs/backend",
+                    "docs/frontend",
+                    "docs/external-integrations",
+                    "docs/review-reports"
+                ],
+                "output_folder": "./"
             }
         ]
     ]
