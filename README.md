@@ -95,7 +95,7 @@ The engine is configured via JSON files. Here's the structure:
       "name": "TechnicalOverview",
       "depends_on": [],
       "parallel": false,
-      "model": "gemini-1.5-pro",
+      "model": "gemini-2.5-flash",
       "temperature": 0.3,
       "initial_instruction_file": "instructions/initial_instruction.txt",
       "post_instruction_file": "instructions/post_instruction.txt",
@@ -118,7 +118,7 @@ The engine is configured via JSON files. Here's the structure:
 - **name**: Descriptive name for the step
 - **depends_on**: Array of step names that must complete first
 - **parallel**: Whether this step can run in parallel with others
-- **model**: Gemini model to use (e.g., "gemini-1.5-pro")
+- **model**: Gemini model to use (e.g., "gemini-2.5-flash")
 - **temperature**: AI creativity level (0.0-1.0)
 - **initial_instruction_file**: Path to initial prompt file
 - **post_instruction_file**: Path to response format instruction file
@@ -139,7 +139,7 @@ Create complex documentation pipelines with dependencies:
       "name": "BusinessOverview",
       "depends_on": [],
       "parallel": false,
-      "model": "gemini-1.5-pro",
+      "model": "gemini-2.5-flash",
       "temperature": 0.3,
       "input_folders": ["src", "docs/business"],
       "output_folder": "docs/business-overview"
@@ -148,7 +148,7 @@ Create complex documentation pipelines with dependencies:
       "name": "TechnicalDocs",
       "depends_on": ["BusinessOverview"],
       "parallel": true,
-      "model": "gemini-1.5-pro",
+      "model": "gemini-2.5-flash",
       "temperature": 0.2,
       "input_folders": ["src", "docs/technical"],
       "output_folder": "docs/technical-docs"
@@ -157,7 +157,7 @@ Create complex documentation pipelines with dependencies:
       "name": "APIReference",
       "depends_on": ["BusinessOverview"],
       "parallel": true,
-      "model": "gemini-1.5-pro",
+      "model": "gemini-2.5-flash",
       "temperature": 0.1,
       "input_folders": ["src/api"],
       "output_folder": "docs/api-reference"

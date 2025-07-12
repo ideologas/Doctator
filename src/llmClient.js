@@ -2,7 +2,7 @@ const { GoogleGenAI } = require('@google/genai');
 
 /**
  * Calls Google Gemini API with a multi-message conversation
- * @param {string} model - Model name (e.g., 'gemini-1.5-pro')
+ * @param {string} model - Model name (e.g., 'gemini-2.5-flash')
  * @param {number} temperature - Temperature for response generation
  * @param {string[]} messages - Array of message strings
  * @returns {Promise<string>} LLM response content
@@ -99,7 +99,7 @@ async function testGeminiConnection() {
     try {
         console.log('🔍 Testing Gemini API connection...');
         
-        const testResponse = await callGemini('gemini-1.5-pro', 0.1, ['Hello, can you respond with just "API test successful"?']);
+        const testResponse = await callGemini('gemini-2.5-flash', 0.1, ['Hello, can you respond with just "API test successful"?']);
         
         if (testResponse.toLowerCase().includes('api test successful')) {
             console.log('✅ Gemini API connection test passed');

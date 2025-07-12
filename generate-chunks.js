@@ -4,9 +4,9 @@ const chunkGenerator = require('./src/chunkGenerator');
 
 async function main() {
   // Hardcoded values for Stage 1
-  // const repoUrl = 'https://github.com/ideologas/Carrot.git';
-  // const branch = 'main';
-  // const destinationPath = 'my_project_repo';
+  const repoUrl = 'https://github.com/ideologas/Carrot.git';
+  const branch = 'main';
+  const destinationPath = 'my_project_repo';
   const chunkOutputFolder = 'chunks';
   const fileFilters = [
     '*.ts', '*.js', '*.html', '*.md', '*.json', '*.py', '*.java', '*.cpp', '*.c', '*.h', '*.cs', '*.php', '*.rb', '*.go', '*.rs', '*.swift', '*.kt'
@@ -15,7 +15,10 @@ async function main() {
   const inputFolder = 'my_project_repo'; // User will upload files here
 
   try {
-    // 🚀 [Stage 1] Skipping repo download. Using uploaded files in inputFolder.
+    // 🚀 [Stage 1] Cloning repo and generating chunks.
+    await gitUtils.cloneRepoAtBranch({ repoUrl, branch, destinationPath });
+    console.log('✅ Repo cloned successfully into:', destinationPath);
+
     await chunkGenerator.generateChunks({
       inputFolders: [inputFolder],
       fileFilters,

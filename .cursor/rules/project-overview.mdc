@@ -70,7 +70,7 @@ Generated json
     {
       "depends_on": [], // Array of step names this step depends on. Empty means no dependencies.
       "parallel": false, // True if this step can run in parallel with other steps with the same dependencies
-      "model": "gemini-1.5-pro",
+      "model": "gemini-2.5-flash",
       "temperature": 0.3,
       "initial_instruction_file": "instructions/business_overview_prompt.txt",
       "post_instruction_file": "instructions/json_response_format.txt",
@@ -84,7 +84,7 @@ Generated json
     {
       "depends_on": ["BusinessOverview"], // Depends on the previous step
       "parallel": true, // Can run in parallel with other parallel steps that also depend on BusinessOverview
-      "model": "gemini-1.5-pro",
+      "model": "gemini-2.5-flash",
       "temperature": 0.2,
       "initial_instruction_file": "instructions/technical_details_prompt.txt",
       "post_instruction_file": "instructions/json_response_format.txt",
@@ -98,7 +98,7 @@ Generated json
     {
       "depends_on": ["BusinessOverview"],
       "parallel": true,
-      "model": "gemini-1.5-pro",
+      "model": "gemini-2.5-flash",
       "temperature": 0.2,
       "initial_instruction_file": "instructions/data_model_prompt.txt",
       "post_instruction_file": "instructions/json_response_format.txt",
@@ -113,7 +113,7 @@ Generated json
     {
       "depends_on": ["TechnicalDetails", "DataModel"], // This step waits for both of its dependencies to finish
       "parallel": false,
-      "model": "gemini-1.5-pro",
+      "model": "gemini-2.5-flash",
       "temperature": 0.1, // Lower temperature for review/consistency
       "initial_instruction_file": "instructions/reviewer_prompt.txt",
       "post_instruction_file": "instructions/json_response_format.txt",

@@ -1,0 +1,53 @@
+```html
+<html>
+<head>
+  <title>Carrot Application Technical Overview</title>
+</head>
+<body>
+  <h1>High-Level System Architecture</h1>
+  <p>The Carrot application employs a microservices architecture, leveraging the Supabase ecosystem as its central component.  This approach enables scalability, maintainability, and independent deployment of key functionalities.  The system consists of a Next.js frontend, backend APIs built with Node.js and Next.js API Routes, a PostgreSQL database managed by Supabase, and integrations with external services like OpenAI for invoice parsing. </p>
+  <p>Data flows from the frontend to the backend APIs, which then interact with the Supabase database and external services as needed. Real-time updates are facilitated using Supabase's Realtime functionality.</p>
+
+  <h1>Key Technical Components & Their Roles</h1>
+  <ul>
+    <li><strong>Frontend (Next.js):</strong>  Provides the user interface for interacting with the application.  Utilizes Tailwind CSS for styling and Shadcn/ui for component building.</li>
+    <li><strong>Backend APIs (Next.js API Routes):</strong> Exposes endpoints for data manipulation and interactions with the database and external services.  Uses Zod for input validation and TanStack Query for client-side data fetching.</li>
+    <li><strong>Supabase Database (PostgreSQL):</strong>  Stores application data (users, invoices, suppliers, payments, transactions).  Row-Level Security (RLS) policies manage authorization.</li>
+    <li><strong>OpenAI Integration Module:</strong> Handles invoice parsing using the OpenAI API.  Includes logic for PDF optimization for large documents.</li>
+    <li><strong>User Management Service (Supabase Auth):</strong> Manages user authentication, authorization, and session management.</li>
+    <li><strong>Reconciliation Engine:</strong> Performs automated reconciliation of invoices and transactions using an exact copy of the UI reconciliation logic.</li>
+    <li><strong>S3 Integration (AWS):</strong> Manages invoice and transaction file storage and retrieval, using Supabase Storage for invoice documents and AWS S3 for staged files and the archive.</li>
+  </ul>
+
+  <h1>Core Technologies & Rationale</h1>
+  <ul>
+    <li><strong>Next.js:</strong>  Full-stack framework for building the frontend and backend APIs, enabling server-side rendering (SSR) and API routes.</li>
+    <li><strong>Node.js:</strong>  Runs the backend APIs, providing a highly scalable and performant runtime.</li>
+    <li><strong>PostgreSQL:</strong> Relational database for reliable data persistence.</li>
+    <li><strong>Supabase:</strong> Provides serverless database, authentication, and storage capabilities, simplifying backend development.</li>
+    <li><strong>React:</strong>  Forms the foundation of the frontend UI, facilitating efficient component-based development.</li>
+    <li><strong>Tailwind CSS:</strong> Rapid UI development and styling.</li>
+    <li><strong>Zod:</strong>  Provides type safety and validation for all external inputs. </li>
+    <li><strong>TanStack Query:</strong> Client-side state management for efficient data fetching.</li>
+    <li><strong>OpenAI API:</strong> Leverages GPT-4 models for sophisticated invoice processing.</li>
+    <li><strong>react-i18next:</strong> Internationalization library for multiple language support.</li>
+  </ul>
+
+  <h1>Data Flow & Persistence Overview</h1>
+  <p>Data typically flows through the system as follows:  The frontend sends requests to the backend APIs, which interact with the Supabase PostgreSQL database.  External invoice data is uploaded to S3 and then parsed using the OpenAI API, generating structured data that's stored in the database.  Transaction data from Excel files is also uploaded to S3, then processed using the Reconciliation Engine, matching transactions to invoices.  The system also utilizes background job processing and queues to handle large batches of invoices and transactions.</p>
+  <p>Supabase Storage handles persisting invoice PDFs.  AWS S3 handles temporary invoice and transaction files before processing, and then processed files are moved into an archive bucket.</p>
+
+  <h1>Deployment & Environment Considerations</h1>
+  <p>The application is deployed as a cloud-native application on Vercel.  Environment variables manage configuration parameters for Supabase, OpenAI, and AWS S3.</p>
+
+  <h1>Key Technical Decisions/Constraints</h1>
+  <ul>
+    <li><strong>Supabase Ecosystem as Central Component:</strong> This decision was driven by the need for a robust, scalable, and easily managed backend infrastructure.</li>
+    <li><strong>Row-Level Security (RLS):</strong> Authorization logic is primarily handled at the database level using RLS for enhanced security.</li>
+    <li><strong>Asynchronous Tasks (Queues):</strong> Batch processing of invoices and reconciliation using background tasks ensures system scalability.</li>
+    <li><strong>AI Parsing and Enhancement:</strong>  OpenAI integration for invoice processing, combined with PDF optimization for large files, increases processing efficiency and accuracy.</li>
+    <li><strong>Comprehensive Data Validation:</strong> Zod validation ensures data integrity throughout the system.</li>
+  </ul>
+</body>
+</html>
+```

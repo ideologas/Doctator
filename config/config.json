@@ -10,7 +10,9 @@
                 "post_instruction_file": "instructions/business-overviewer/post_instruction.txt",
                 "input_folders": ["chunks", "docs/overview"],
                 "output_folder": "docs/overview"
-            },
+            }
+        ],
+        [
             {
                 "name": "TechnicalOverview",
                 "model": "gemini-2.5-flash",
@@ -19,19 +21,23 @@
                 "post_instruction_file": "instructions/technical-overviewer/post_instruction.txt",
                 "input_folders": ["chunks", "docs/technology"],
                 "output_folder": "docs/technology"
-            },
+            }
+        ],
+        [
             {
                 "name": "EntityExpert",
-                "model": "gemini-2.5-pro",
+                "model": "gemini-2.5-flash",
                 "temperature": 0.1,
                 "initial_instruction_file": "instructions/entity-expert/initial_instruction.txt",
                 "post_instruction_file": "instructions/entity-expert/post_instruction.txt",
                 "input_folders": ["chunks", "docs/entities"],
                 "output_folder": "docs/entities"
-            },
+            }
+        ],
+        [
             {
                 "name": "TermsConceptsExpert",
-                "model": "gemini-2.5-pro",
+                "model": "gemini-2.5-flash",
                 "temperature": 0.1,
                 "initial_instruction_file": "instructions/terms-concepts-expert/initial_instruction.txt",
                 "post_instruction_file": "instructions/terms-concepts-expert/post_instruction.txt",
@@ -42,7 +48,7 @@
         [
             {
                 "name": "BackendExpert",
-                "model": "gemini-2.5-pro",
+                "model": "gemini-2.5-flash",
                 "temperature": 0.1,
                 "initial_instruction_file": "instructions/backend-expert/initial_instruction.txt",
                 "post_instruction_file": "instructions/backend-expert/post_instruction.txt",
@@ -52,10 +58,12 @@
                     "docs/terms-and-concepts"
                 ],
                 "output_folder": "docs/backend"
-            },
+            }
+        ],
+        [
             {
                 "name": "FrontendExpert",
-                "model": "gemini-2.5-pro",
+                "model": "gemini-2.5-flash",
                 "temperature": 0.1,
                 "initial_instruction_file": "instructions/frontend-expert/initial_instruction.txt",
                 "post_instruction_file": "instructions/frontend-expert/post_instruction.txt",
@@ -70,7 +78,7 @@
         [
             {
                 "name": "ExternalIntegrationsExpert",
-                "model": "gemini-2.5-pro",
+                "model": "gemini-2.5-flash",
                 "temperature": 0.1,
                 "initial_instruction_file": "instructions/external-integrations-expert/initial_instruction.txt",
                 "post_instruction_file": "instructions/external-integrations-expert/post_instruction.txt",
@@ -86,7 +94,7 @@
         [
             {
                 "name": "DocumentationReviewer",
-                "model": "gemini-2.5-pro",
+                "model": "gemini-2.5-flash",
                 "temperature": 0.5,
                 "initial_instruction_file": "instructions/documentation-reviewer/initial_instruction.txt",
                 "post_instruction_file": "instructions/documentation-reviewer/post_instruction.txt",
@@ -105,7 +113,7 @@
         [
             {
                 "name": "DocumentationPublisher",
-                "model": "gemini-2.5-pro",
+                "model": "gemini-2.5-flash",
                 "temperature": 0.1,
                 "initial_instruction_file": "instructions/documentation-publisher/initial_instruction.txt",
                 "post_instruction_file": "instructions/documentation-publisher/post_instruction.txt",
